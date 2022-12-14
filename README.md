@@ -6,3 +6,5 @@ Layered Shading (LaSh) is a bxdf and displacement shader layering/combining syst
 
 Documentation is on the [Wiki Page](https://github.com/LaikaStudios/LaSh/wiki/Home).
 
+Please feel free to use the [Discussions Tab](https://github.com/LaikaStudios/LaSh/discussions).
+We'd love you hear what you think, or to discuss any issues or thoughts you may have about this repository and its Layered Shading implementation.
