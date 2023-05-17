@@ -1,6 +1,6 @@
 # Layered Shading
 
-![LashLayers](https://github.com/LaikaStudios/LaSh/blob/main/images/LashLayers.jpg)
+![LashLayers](images/LashLayers1280x640.jpg)
 
 This repository and its associated documentation will be updated to contain the latest reference implementation of the paper *Layering Displaced Materials with Thickness, Accumulation, and Size* once it becomes available.
 
