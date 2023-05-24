@@ -26,7 +26,7 @@ I'd love you hear what you think, or to discuss any issues or thoughts you may h
 
     1. Optionally install [Katana](https://www.foundry.com/products/katana) and [RenderMan for Katana](https://renderman.pixar.com/bridge-tools) and ensure they are functioning properly.
      While optional, this step is highly recommended, as the core LaSh functionality is packaged into Katana [ShadingGroup](https://learn.foundry.com/katana/Content/ug/adding_assigning_materials/using_the_shadinggroup_node.html) macros.
-     If another [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools) is used, you'll have to implement their functionality yourself using the individual [`osl`](./osl/) and [Lama](https://rmanwiki.pixar.com/display/REN24/MaterialX+Lama) shading nodes.
+     If another [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools) is used, you'll have to implement their functionality yourself using the individual [`osl`](./osl/) and [Lama](https://rmanwiki.pixar.com/display/REN25/MaterialX+Lama) shading nodes.
 
 1. Set these environment variables appropriately. These are required by the [make](https://www.gnu.org/software/make/manual/) system that's used to compile and install the shaders:
     * PIXAR_ROOT
