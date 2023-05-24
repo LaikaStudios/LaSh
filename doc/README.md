@@ -114,7 +114,7 @@ Note this file does not generate the *Mask* values and displacement pattern show
 The [`katana/project/Layers.katana`](../katana/project/) file uses the supplied [LashLayers](#lashlayers) macro to layer up to six LaSh Materials.
 Three are layered here, but the scene contains two others so you can easily experiment with the layering functionality.
 
-![Layers](../media/Layers1280x640.jpg)
+![Layers](media/Layering.png)
 ![Layers](media/Layers.png)
 
 [Top](#Top)
