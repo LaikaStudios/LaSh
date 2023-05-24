@@ -1,18 +1,17 @@
-# Layered Shading
+# Layered Shading (LaSh)
 
 ![LashLayers](media/Layers1280x640.jpg)
 
-This repository and its associated documentation contain the latest public reference implementation of the paper *Layering Displaced Materials with Thickness, Accumulation, and Size*.
+This repository and its associated documentation contain the latest public reference implementation of the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*]().
 
-Layered Shading (LaSh) is a bxdf and displacement shader layering/combining system for use with RenderMan based on the [Layering Displaced Materials with Thickness, Accumulation, and Size]() paper.
-Similar to the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home) from which it is derived, LaSh incorporates bxdfs and displacement into its definition of a Material so that it can represent a true physical substance, and implements a displacement layering capability so LaSh Materials can be easily layered in a physically plausible way.
+Similar to the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home) from which it is derived, LaSh incorporates bxdfs and displacements into its definition of a LaSh Material so that it can represent a true physical substance, and implements a bxdf and displacement layering capability so LaSh Materials can be easily layered in a physically plausible way.
 
 Documentation is in the [`doc`](doc) directory.
 
 As a bonus, this repository also contains an updated version of the [Siggraph 2022 OSL Shaders for RenderMan](https://dl.acm.org/doi/abs/10.1145/3532724.3535604) course [Supplementary Material](https://github.com/LaikaStudios/OSLShadersForRenderMan) shading nodes.
 
 Please feel free to use the [Discussions Tab](https://github.com/LaikaStudios/LaSh/discussions).
-We'd love you hear what you think, or to discuss any issues or thoughts you may have about this repository and its Layered Shading implementation.
+I'd love you hear what you think, or to discuss any issues or thoughts you may have about this repository and its Layered Shading implementation.
 
 
 # Requirements
@@ -26,8 +25,8 @@ We'd love you hear what you think, or to discuss any issues or thoughts you may 
     1. Install [RenderManProServer](https://renderman.pixar.com/store) and ensure it is functioning properly.
 
     1. Optionally install [Katana](https://www.foundry.com/products/katana) and [RenderMan for Katana](https://renderman.pixar.com/bridge-tools) and ensure they are functioning properly.
-     While optional, this step is highly recommended, as the LaSh Material nodes are conveniently packaged into Katana [ShadingGroup](https://learn.foundry.com/katana/Content/ug/adding_assigning_materials/using_the_shadinggroup_node.html) macros.
-     If another [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools) is used, you'll have to implement their functionality yourself using the individual LaSh shading nodes.
+     While optional, this step is highly recommended, as the core LaSh functionality is packaged into Katana [ShadingGroup](https://learn.foundry.com/katana/Content/ug/adding_assigning_materials/using_the_shadinggroup_node.html) macros.
+     If another [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools) is used, you'll have to implement their functionality yourself using the individual [`osl`](./osl/) and [Lama](https://rmanwiki.pixar.com/display/REN24/MaterialX+Lama) shading nodes.
 
 1. Set these environment variables appropriately. These are required by the [make](https://www.gnu.org/software/make/manual/) system that's used to compile and install the shaders:
     * PIXAR_ROOT
@@ -69,7 +68,7 @@ In this way, you can edit a source file and execute `make` from within the osl d
         export RMAN_SHADERPATH="${HOME}/LaSh/build/${RMAN_VERSION}/shaders:${RMAN_SHADERPATH}"
         ```
 
-    1. If you're using [Katana](https://www.foundry.com/products/katana) and you want to make use of the supplied [ShadingGroup](https://learn.foundry.com/katana/Content/ug/adding_assigning_materials/using_the_shadinggroup_node.html) macros:
+    1. If you're using [Katana](https://www.foundry.com/products/katana) and you want to make use of the supplied [ShadingGroup](https://learn.foundry.com/katana/Content/ug/adding_assigning_materials/using_the_shadinggroup_node.html) macros and the shading node "alt+p" and "alt+shift+p" Shading Node Menus:
 
         ```bash
         export KATANA_RESOURCES="${HOME}/LaSh/build/katana:${KATANA_RESOURCES}"

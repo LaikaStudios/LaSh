@@ -1,8 +1,6 @@
 <a name="Top"></a>
 # LaSh
 
-![Layers](../media/Layers1280x640.jpg)
-
 LaSh is a Material layering system for use with RenderMan based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*]().
 Derived from the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home), it has been expanded upon and reimplemented using the latest shading and rendering technology.
 
@@ -29,7 +27,7 @@ The rest of this documentation assumes you have read and are familiar with the c
     1. [Thickness, Accumulation, and Tau Scale](#thickness-accumulation-and-tau-scale)
     1. [Rusting Painted Metal](#rusting-painted-metal)
     1. [Layering Multiple Materials](#layering-multiple-materials)
-    1. [Mixing](#mixing)
+    1. [Mixing Materials](#mixing-materials)
 1. [Katana Macros](#katana-macros)
     1. [LashMaterial](#lashmaterial)
     1. [LashLayer](#lashlayer)
@@ -43,7 +41,7 @@ The rest of this documentation assumes you have read and are familiar with the c
 
 ## The LaSh Material
 
-A LaSh Material is composed of two parts: its LaSh Bxdf (**LaB**) and its LaSh Displacement (**LaD**).
+A LaSh Material (**LaM**) is composed of two parts: its LaSh Bxdf (**LaB**) and its LaSh Displacement (**LaD**).
 This is similar to a [MaterialX](https://materialx.org/) **Material Node** that contains both a surface shader and a displacement shader.
 
 A **LaB** is composed of a [Lama Bxdf](https://rmanwiki.pixar.com/display/REN25/MaterialX+Lama) - which can itself be composed of any number of Lama Bxdfs combined in whatever way you want - plus its *Mask*.
@@ -52,7 +50,7 @@ The LaB *Mask* typically has a relatively sharp transition to 0 at the edge of w
 
 A **LaD** is composed of several parts.
 The first is the displacement itself, which is represented as the change in the surface point: *DeltaP*.
-As explained in the [OSL Shaders for RenderMan](https://dl.acm.org/doi/abs/10.1145/3532724.3535604) course, this is a much more efficient and useful displacement representation than the displaced point itself.
+As explained in the [Siggraph 2022 OSL Shaders for RenderMan](https://dl.acm.org/doi/abs/10.1145/3532724.3535604) course, this is a much more efficient and useful displacement representation than the displaced point itself.
 The LaD *Bulk* is another critical displacement-related value.
 It allows LaDs to accumulate as they're layered over each other.
 The LaD *Mask* defines the displacement transition at the edge of the Material.
@@ -68,7 +66,7 @@ when displacements accumulate, they increase the resulting Material's *Bulk*.
 Two additional values are contained in the [LaD struct](../osl/include/LaD.h): *Tau Scale* and *Nd*.
 *Tau Scale* is used to make any necessary or desired correction to the *Bulk*'s effect on the optical thickness of the layered BxDFs, and *Nd* contains the previous LaD's displaced surface normal in order to allow the possibility of cascading height-based displacements.
 
-Note the displacement *Size* attribute described in the paper has been renamed *Bulk* in this implemenation to disambiguate it from the **Size** control parameter.
+**Note:** the displacement *Size* attribute described in the paper has been renamed *Bulk* in this implemenation to disambiguate it from the *Size* pattern variation (a.k.a. signal) attribute, and the **Size** pattern generation control parameter. See **Section 3** and **Section 5** of the paper for more information about Size.
 
 [TOC](#table-of-contents)
 
@@ -91,7 +89,7 @@ Two opaque Materials are layered (small green bumps over large blue bumps), and 
 ### Thickness, Accumulation, and Tau Scale
 
 The [`katana/project/Tau.katana`](../katana/project) file can be used to explore the effects of *Thickness*, *Accumulation*, and *Tau Scale* on the resulting layered Material. This scene can be used to generate the images in **Figure 7** of the paper.
-Transparent cherry syrup is layered over a blue waffle, showing the effects of *Thickness* and *Accumulation* on the resuling optical thickness (*Tau*) of the result.
+Transparent cherry syrup is layered over a blue waffle, showing the effects of *Thickness*, *Accumulation*, and *Tau Scale* on the resuling optical thickness (Tau) of the layered result.
 
 ![Thickness and Accumulation](media/TauTA.png)
 ![ThickAndAccum](media/Tau.png)
@@ -105,7 +103,7 @@ The [`katana/project/RustingPainedMetal.katana`](../katana/project) file contain
 It uses an Age parameter to control procedurally generated patterns which define separate LaB and LaD *Mask* values and displacement.
 Note this file does not generate the *Mask* values and displacement pattern shown in **Figure 9** and **10** of the paper, which use fixed patterns.
 
-![RustingPaintedMetal](media/RustingPaintedMetal1280x640.jpg)
+![RustingPaintedMetal](media/RustRange.png)
 ![RustingPaintedMetal](media/RustingPaintedMetal.png)
 
 [Top](#Top)
@@ -122,11 +120,11 @@ Three are layered here, but the scene contains two others so you can easily expe
 [Top](#Top)
 [TOC](#table-of-contents)
 
-## Mixing
+## Mixing Materials
 
 The [`katana/project/Mix.katana`](../katana/project/Mix.katana) file uses the supplied [LashMix](#lashmix) macro to blend between two Materials.
 
-![Mix](media/Mix1280x640.jpg)
+![Mix](media/MixRange.png)
 ![Mix](media/Mix.png)
 
 [Top](#Top)
@@ -136,7 +134,9 @@ The [`katana/project/Mix.katana`](../katana/project/Mix.katana) file uses the su
 
 The [Katana](https://learn.foundry.com/katana/6.0/Content/learn_katana.html) [**ShadingGroup**](https://learn.foundry.com/katana/Content/ug/adding_assigning_materials/using_the_shadinggroup_node.html) Macros implement the core functional blocks shown in **Figure 2**, **3**, and **4** of the paper.
 There are also additional macros that provide other useful functionality.
-Other than the [LashMaterial](#lashmaterial) macro, the contents of these ShadingGroup Macros are not exposed to the user.
+Other than the [LashMaterial](#lashmaterial) macro, which contains a Material created by the user, the contents of these ShadingGroup Macros are not altered or exposed.
+
+If you are using another application's shading system, you'll need use that system's shading capabilities to assemble these functional blocks yourself with the supplied [osl](../osl) shading nodes.
 
 ### LashMaterial
 
@@ -204,8 +204,9 @@ This also allows Materials to use [Cascading Displacement](#cascading-displaceme
 
 ### LashCascade Macro
 
-This macro incorporates both of the previous enhancements, allowing for an alternate Material interconnection graph as shown in [Daisy Chained Materials](#daisy-chained-materials) that provides additional functionality.
-It does so by combining a slightly modified shading graph from the [LashMaterial](#lashmaterial) macro that uses the Below Material's [LaD_struct.Nd](../osl/include/LaD.h) to define the **displace_Height** Normal direction, and a [LashLayer](#lashlayer) macro to layer the Material shading graph over the Below Material input.
+This macro incorporates both of the previous enhancements, allowing for an alternate Material interconnection graph as shown in [Daisy Chained Materials](#daisy-chained-materials).
+It does so by combining a slightly modified shading graph from the [LashMaterial](#lashmaterial) macro that uses the Below Material's [LaD_struct.Nd](../osl/include/LaD.h) to define the **displace_Height** Normal direction, and an internal [LashLayer](#lashlayer) macro to layer the LaSh Material's shading graph over the Below Material input.
+Given its greater functionality and cleaner top-level Material Layering interconnection graph, this is the preferred Material definition macro over the [LashMaterial](#lashmaterial) macro layered with the [LashLayer](#lashlayer) or [LashLayers](#lashlayers) macros.
 
 ![LashCascade](media/LashCascadeMacro.png) 
 
