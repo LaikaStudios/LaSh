@@ -1,0 +1,56 @@
+/*
+ *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#include "LaD.h"
+
+shader LaD_ToParts
+[[
+    int rfm_nodeid = 1234263,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Convert a LaSh Displacement (LaD) struct into its component parts: "
+            "<p>"
+            "<b>Mask</b>: the displacement mask. "
+            "<br/><b>Thickness</b> "
+            "<br/><b>Accumulation</b> "
+            "<br/><b>TauScale</b>: the optical density scale. "
+            "<br/><b>Nd</b>: the displaced surface normal. "
+            "<br/><b>DeltaP</b>: the vector displacement. "
+            "<br/><b>Bulk</b>: the displacement's accumulation bulk. "
+            "<p/>"
+    ]],
+
+    LaD_struct  LaD = LaD_INIT
+    [[
+        string readOnly = "True",
+        string help =
+            "A LaSh Displacement (LaD). "
+    ]],
+
+    output float  Mask = 1.0,
+    output float  Thickness = 0.0,
+    output float  Accumulation = 0.0,
+    output float  TauScale = 1.0,
+    output normal Nd = N,
+    output vector DeltaP = vector(0.0),
+    output float  Bulk = 0.0
+)
+{
+    Mask = LaD.Mask;
+    Thickness = LaD.Thickness;
+    Accumulation = LaD.Accumulation;
+    TauScale = LaD.TauScale;
+    Nd = LaD.Nd;
+    DeltaP = LaD.DeltaP;
+    Bulk = LaD.Bulk;
+}

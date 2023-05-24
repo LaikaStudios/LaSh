@@ -1,0 +1,88 @@
+/*
+ *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#include "LaD.h"
+
+shader LaD_Select
+[[
+    int rfm_nodeid = 1234261,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Selects one of the LaSh Displacements (LaD). "
+    ]],
+
+    int Selection = 0
+    [[
+        int slider = 1, int slidermin = 0, int slidermax = 5, int slidersensitivity = 1,
+        string help =
+            "Selects which input LaD to output. "
+    ]],
+
+    LaD_struct  In5 = LaD_INIT
+    [[
+        string label = "In 5",
+        string readOnly = "True",
+        string help =
+            "A LaSh Displacement (LaD). "
+    ]],
+
+    LaD_struct  In4 = LaD_INIT
+    [[
+        string label = "In 4",
+        string readOnly = "True",
+        string help =
+            "A LaSh Displacement (LaD). "
+    ]],
+
+    LaD_struct  In3 = LaD_INIT
+    [[
+        string label = "In 3",
+        string readOnly = "True",
+        string help =
+            "A LaSh Displacement (LaD). "
+    ]],
+
+    LaD_struct  In2 = LaD_INIT
+    [[
+        string label = "In 2",
+        string readOnly = "True",
+        string help =
+            "A LaSh Displacement (LaD). "
+    ]],
+
+    LaD_struct  In1 = LaD_INIT
+    [[
+        string label = "In 1",
+        string readOnly = "True",
+        string help =
+            "A LaSh Displacement (LaD). "
+    ]],
+
+    LaD_struct  In0 = LaD_INIT
+    [[
+        string label = "In 0",
+        string readOnly = "True",
+        string help =
+            "A LaSh Displacement (LaD). "
+    ]],
+
+    output LaD_struct  Out = LaD_INIT
+)
+{
+    if( 0 == Selection ) Out = In0;
+    else if( 1 == Selection ) Out = In1;
+    else if( 2 == Selection ) Out = In2;
+    else if( 3 == Selection ) Out = In3;
+    else if( 4 == Selection ) Out = In4;
+    else if( 5 == Selection ) Out = In5;
+}

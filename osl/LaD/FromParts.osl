@@ -1,0 +1,101 @@
+/*
+ *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#include "LaD.h"
+
+shader LaD_FromParts
+[[
+    int rfm_nodeid = 1234258,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Create a LaSh Displacement (LaD) struct from its component parts: "
+            "<p>"
+            "<b>Mask</b>: the displacement mask. "
+            "<br/><b>Thickness</b> "
+            "<br/><b>Accumulation</b> "
+            "<br/><b>TauScale</b>: the optical density scale. "
+            "<br/><b>Nd</b>: the displaced surface normal. "
+            "<br/><b>DeltaP</b>: the vector displacement. "
+            "<br/><b>Bulk</b>: the displacement's accumulation bulk. "
+            "<p/>"
+    ]],
+
+    float Mask = 1.0
+    [[
+        string help =
+            "The displacement Mask. "
+    ]],
+
+    float Thickness = 0.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Controls the <b>Thickness</b> with which the <b>DeltaP</b> displacement "
+            "is applied. A \"thicker\" application results in any underlying displacement "
+            "being more covered over: "
+            "<p>"
+            "<i>0</i> - the underlying displacement is fully present. "
+            "<br/><i>1</i> - the underlying displacement is completely absent. "
+            "</p>"
+    ]],
+
+    float Accumulation = 0.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "<b>Accumulation</b> determines whether the <b>DeltaP</b> displacement "
+            "is applied over the accumulation of underlying displacement(s). "
+            "Greater <b>Accumulation</b> results in more surface offset due "
+            "to the buildup of the underlying material(s): more Bulk. "
+    ]],
+
+    float TauScale = 1.0
+    [[
+        string label = "Tau Scale",
+        int slider = 1, float slidermin = 0.1, float slidermax = 10.0, float slidercenter = 1.0,
+        string help =
+            "<b>Tau Scale</b> controls the scale between displacement "
+            "<b>Bulk</b> and the optical density output <b>Tau</b> "
+            "produced by the <b>LaD_Layer</b> node. "
+    ]],
+
+    normal Nd = N
+    [[
+        string help =
+            "The displaced surface normal. "
+    ]],
+
+    vector DeltaP = vector(0.0)
+    [[
+        string help =
+            "The surface displacement vector. "
+    ]],
+
+    float Bulk = 0.0
+    [[
+        string help =
+            "The displacement's accumulation Bulk. "
+    ]],
+
+
+    output LaD_struct  LaD = LaD_INIT
+)
+{
+    LaD.Mask = Mask;
+    LaD.Thickness = Thickness;
+    LaD.Accumulation = Accumulation;
+    LaD.TauScale = TauScale;
+    LaD.Nd = Nd;
+    LaD.DeltaP = DeltaP;
+    LaD.Bulk = Bulk;
+}

@@ -1,0 +1,60 @@
+/*
+ *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#include "LaD.h"
+
+shader LaD_Mix
+[[
+    int rfm_nodeid = 1234260,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Linearly Mix between the <b>In 0</b> and <b>In 1</b> "
+            "LaSh Displacements (LaDs) based on the <b>Mix</b> value. "
+    ]],
+
+    float Mix = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Controls the linear <b>Mix</b> between the "
+            "<b>In 0</b> (<i>0</i> ) and <b>In 1</b> (<i>1</i> ) "
+            "LaSh Displacements (LaDs). "
+    ]],
+
+    LaD_struct  In1 = LaD_INIT
+    [[
+        string label = "In 1",
+        string readOnly = "True",
+        string help =
+            "A LaSh Displacement (LaD) to mix with the other. "
+    ]],
+
+    LaD_struct  In0 = LaD_INIT
+    [[
+        string label = "In 0",
+        string readOnly = "True",
+        string help =
+            "A LaSh Displacement (LaD) to mix with the other. "
+    ]],
+
+    output LaD_struct  Out = LaD_INIT
+)
+{
+    Out.Mask = mix( In0.Mask, In1.Mask, Mix );
+    Out.Thickness = mix( In0.Thickness, In1.Thickness, Mix );
+    Out.Accumulation = mix( In0.Accumulation, In1.Accumulation, Mix );
+    Out.TauScale = mix( In0.TauScale, In1.TauScale, Mix );
+    Out.Nd = normalize( mix( In0.Nd, In1.Nd, Mix ));
+    Out.DeltaP = mix( In0.DeltaP, In1.DeltaP, Mix );
+    Out.Bulk = mix( In0.Bulk, In1.Bulk, Mix );
+}

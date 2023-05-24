@@ -1,0 +1,81 @@
+/*
+ *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#include "LaD.h"
+
+shader LaD_Layer
+[[
+    int rfm_nodeid = 1234259,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "<b>Layer</b> the <b>Above</b> LaSh Displacement (LaD) "
+            "over the <b>Below</b> LaSh Displacement (LaD). "
+    ]],
+
+    LaD_struct Above = LaD_INIT
+    [[
+        string readOnly = "True",
+        string help =
+            "The <b>Above</b> LaSh Displacement (LaD). "
+
+    ]],
+
+    LaD_struct Below = LaD_INIT
+    [[
+        string readOnly = "True",
+        string help =
+            "The <b>Below</b> LaSh Displacement (LaD). "
+    ]],
+
+    output float Tau = 0.0,
+    output LaD_struct Out = LaD_INIT
+)
+{
+    // BxDF Optical Thickness.
+    normal  Non = N;
+    getattribute( "builtin", "Non", Non );
+
+    float cosA = (1.0 + dot( normalize(Above.DeltaP), Non ))/2.0;
+    Tau = cosA * length(Above.DeltaP);
+
+    float cosB = (1.0 - dot( normalize(Below.DeltaP), Non ))/2.0;
+    Tau += Above.Thickness * cosB * length(Below.DeltaP);
+
+    Tau += Above.Accumulation * Below.Bulk;
+
+    Tau *= Above.TauScale;
+
+    // Displacement Layering.
+    Out.DeltaP = mix(
+                Below.DeltaP,
+                Above.DeltaP + (1.0-Above.Thickness)*Below.DeltaP
+                + (Above.Accumulation*Below.Mask) * Below.Bulk * N, // Should be the N used to create Below.Nd.
+                Above.Mask
+                );
+
+    Out.Bulk = mix(
+                Below.Bulk,
+                Above.Bulk + (1.0-Above.Thickness)*Below.Bulk
+                + (Above.Accumulation*Below.Mask) * Below.Bulk,
+                Above.Mask
+                );
+
+    Out.Mask = mix( Below.Mask, 1.0, Above.Mask );
+
+    Out.Nd = normalize( mix( Below.Nd, Above.Nd, Above.Mask ));
+
+    // Mix the remaining values?
+    Out.Thickness = mix( Below.Thickness, Above.Thickness, Above.Mask );
+    Out.Accumulation = mix( Below.Accumulation, Above.Accumulation, Above.Mask );
+    Out.TauScale = mix( Below.TauScale, Above.TauScale, Above.Mask );
+}
