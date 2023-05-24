@@ -202,6 +202,8 @@ This also allows Materials to use [Cascading Displacement](#cascading-displaceme
 
 ![Cascade](media/Cascade.png)
 
+The [`katana/project/Cascade.katana`](../katana/project) file contains this example.
+
 ### LashCascade Macro
 
 This macro incorporates both of the previous enhancements, allowing for an alternate Material interconnection graph as shown in [Daisy Chained Materials](#daisy-chained-materials).
