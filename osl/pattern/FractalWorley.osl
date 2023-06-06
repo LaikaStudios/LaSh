@@ -232,7 +232,7 @@ shader pattern_FractalWorley
         // Divide Q into cells (unit cubes) and randomly place
         // a point within each. Then measure the distance between
         // the shaded point and the random point in each of the
-        // nine cells that either contain it or are neighbors of it.
+        // 27 cells that either contain it or are neighbors of it.
         point  QIndex = floor( Qi );
 
         // Variation offset.

@@ -8,7 +8,7 @@ Derived from the [Laika Production Shading Library for RenderMan 20](https://git
 
 LaSh implements these key features:
 
-   * It combines a material's bxdf response(s) and its displacement into an encapsulated Material definition.
+   * It combines a material's bxdf and displacement into an encapsulated Material definition.
 In this way, a LaSh Material contains all the information about a Material's optical and physical properties in a single atomic object,
 representing a true physical substance.
 
@@ -54,7 +54,7 @@ A **LaD** is composed of several parts.
 The first is the displacement itself, which is represented as the change in the surface point: *DeltaP*.
 As explained in the [Siggraph 2022 OSL Shaders for RenderMan](https://dl.acm.org/doi/abs/10.1145/3532724.3535604) course, this is a much more efficient and useful displacement representation than the displaced point itself.
 The LaD *Bulk* is another critical displacement-related value.
-It allows LaDs to accumulate as they're layered over each other.
+It allows LaDs to accumulate mass as they're layered over each other.
 The LaD *Mask* defines the displacement transition at the edge of the Material.
 A LaD *Mask* needs a slightly "softer" transition than the LaB *Mask*, since rendered displacement does not respond well to severe discontinuities, and abrupt displacement transitions also aren't very realistic looking.
 
@@ -101,7 +101,7 @@ Transparent cherry syrup is layered over a blue waffle, showing the effects of *
 
 ### Rusting Painted Metal
 
-The [`katana/project/RustingPainedMetal.katana`](../katana/project) file contains an example of a high-level Material node discussed in the paper's **Results Section 6**
+The [`katana/project/RustingPainedMetal.katana`](../katana/project) file contains an example of a high-level Material node discussed in the paper's **Results Section 6**.
 It uses an Age parameter to control procedurally generated patterns which define separate LaB and LaD *Mask* values and displacement.
 Note this file does not generate the *Mask* values and displacement pattern shown in **Figure 9** and **10** of the paper, which use fixed patterns.
 
@@ -114,7 +114,7 @@ Note this file does not generate the *Mask* values and displacement pattern show
 ### Layering Multiple Materials
 
 The [`katana/project/Layers.katana`](../katana/project/) file uses the supplied [LashLayers](#lashlayers) macro to layer up to six LaSh Materials.
-Three are layered here, but the scene contains two others so you can easily experiment with the layering functionality.
+Three are pre-layered in the example scene, but it contains two others so you can easily experiment with the layering functionality.
 
 ![Layers](media/Layering.png)
 ![Layers](media/Layers.png)
@@ -138,7 +138,7 @@ The [Katana](https://learn.foundry.com/katana/6.0/Content/learn_katana.html) [**
 There are also additional macros that provide other useful functionality.
 Other than the [LashMaterial](#lashmaterial) macro, which contains a Material created by the user, the contents of these ShadingGroup Macros are not altered or exposed.
 
-If you are using another application's shading system, you'll need use that system's shading capabilities to assemble these functional blocks yourself with the supplied [osl](../osl) shading nodes.
+If you are using another application's shading system, you'll need use that system's shading capabilities to assemble these functional blocks yourself with the supplied [`osl`](../osl) shading nodes.
 
 ### LashMaterial
 
@@ -194,7 +194,7 @@ It exposes all the [LamaSurface](https://rmanwiki.pixar.com/display/REN25/LamaSu
 ### Cascading Displacement
 
 **Section 7.3** of the paper describes an enhancement based on cascading height-based displacements.
-In order to support this possibility, the implementation has been updated to include *Nd* in its [LaD_struct](../osl/include/LaD.h) defintion.
+In order to support this possibility, this implementation has been updated to include *Nd* in its [LaD_struct](../osl/include/LaD.h) defintion.
 
 ### Daisy Chained Materials
 

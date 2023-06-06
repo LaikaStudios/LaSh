@@ -15,11 +15,21 @@ I'd love you hear what you think, or to discuss any issues or thoughts you may h
 
 
 # Requirements
-* [Pixar's RenderMan](https://renderman.pixar.com) and a [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools). Foundry's [Katana](https://www.foundry.com/products/katana) is required to make use of the high-level ShadingGroup macros, which contain the LaSh Material Layering and other functionality packaged for use in Katana.
 * `make`
 * `python3`
+* [Pixar's RenderMan](https://renderman.pixar.com) is used in the examples
+and the `make` system.
+* Foundry's [Katana](https://www.foundry.com/products/katana) and its
+associated [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools)
+are required to make use of the high-level ShadingGroup macros,
+which contain the LaSh Material Layering and other functionality packaged for use in Katana,
+as well as the supplied Katana [`project`](./katana/project/) scene files.
+
+Other rendering and application systems can still make use of the core [`osl`](./osl/) shading nodes and `make` system to assemble the necessary functionality to implement the LaSh system in those environments.
 
 # Quick Start
+To use the supplied repository content as is:
+
 1. Set up RenderMan:
 
     1. Install [RenderManProServer](https://renderman.pixar.com/store) and ensure it is functioning properly.
