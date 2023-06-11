@@ -30,6 +30,15 @@ shader LaD_ToParts
             "<p/>"
     ]],
 
+    float CascadeNormal = 1.0
+    [[
+        string label = "Cascade Normal",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Pass-through the input <b>LaD</b>'s normal (1), "
+            "or replace it with the original surface normal (0). "
+    ]],
+
     LaD_struct  LaD = LaD_INIT
     [[
         string readOnly = "True",
@@ -50,7 +59,7 @@ shader LaD_ToParts
     Thickness = LaD.Thickness;
     Accumulation = LaD.Accumulation;
     TauScale = LaD.TauScale;
-    Nd = LaD.Nd;
+    Nd = normalize( mix( N, LaD.Nd, CascadeNormal ));
     DeltaP = LaD.DeltaP;
     Bulk = LaD.Bulk;
 }

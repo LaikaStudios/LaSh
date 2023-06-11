@@ -206,13 +206,15 @@ This also allows Materials to use [Cascading Displacement](#cascading-displaceme
 
 The [`katana/project/Cascade.katana`](../katana/project) file contains this example.
 
-### LashCascade Macro
+### LashMaterialLink Macro
 
 This macro incorporates both of the previous enhancements, allowing for an alternate Material interconnection graph as shown in [Daisy Chained Materials](#daisy-chained-materials).
-It does so by combining a slightly modified shading graph from the [LashMaterial](#lashmaterial) macro that uses the Below Material's [LaD_struct.Nd](../osl/include/LaD.h) to define the **displace_Height** Normal direction, and an internal [LashLayer](#lashlayer) macro to layer the LaSh Material's shading graph over the Below Material input.
+It does so by combining a slightly modified shading graph from the [LashMaterial](#lashmaterial) macro that uses the Below Material's [LaD_struct.Nd](../osl/include/LaD.h) to define the **displace_Height** Normal direction, and an internal [LashLayer](#lashlayer) macro to layer the Material's internal shading graph over the Below Material input.
+
+To provide control over how much the Material's height-based displacement Normal direction is affected by the Below Material's displaced surface normal, the [`osl/LaD/ToParts`](../osl/LaD/ToParts.osl) shader has an added Cascade Normal parameter to adjust its influence.
 Given its greater functionality and cleaner top-level Material Layering interconnection graph, this is the preferred Material definition macro over the [LashMaterial](#lashmaterial) macro layered with the [LashLayer](#lashlayer) or [LashLayers](#lashlayers) macros.
 
-![LashCascade](media/LashCascadeMacro.png) 
+![LashCascade](media/LashMaterialLink.png) 
 
 [Top](#Top)
 [TOC](#table-of-contents)
