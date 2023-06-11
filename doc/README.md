@@ -39,7 +39,7 @@ The rest of this documentation assumes you have read and are familiar with the c
 1. [Enhancements](#enhancements)
     1. [Cascading Displacement](#cascading-displacement)
     1. [Daisy Chained Materials](#daisy-chained-materials)
-    1. [LashCascade Macro](#lashcascade-macro)
+    1. [LashMaterialLink Macro](#lashmateriallink-macro)
 
 ## The LaSh Material
 
