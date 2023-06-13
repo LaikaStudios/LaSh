@@ -1,7 +1,7 @@
 <a name="Top"></a>
 # LaSh
 
-![Layering](media/Layering2.png)
+![Layering](media/Layering3.png)
 
 LaSh is a Material layering system for use with RenderMan based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*]().
 Derived from the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home), it has been expanded upon and reimplemented using the latest shading and rendering technology.
@@ -116,7 +116,7 @@ Note this file does not generate the *Mask* values and displacement pattern show
 The [`katana/project/Layers.katana`](../katana/project/) file uses the supplied [LashLayers](#lashlayers) macro to layer up to six LaSh Materials.
 Three are pre-layered in the example scene, but it contains two others so you can easily experiment with the layering functionality.
 
-![Layers](media/Layering02.png)
+![Layering](media/Layering03.png)
 ![Layers](media/Layers.png)
 
 [Top](#Top)
@@ -214,7 +214,7 @@ It does so by combining a slightly modified shading graph from the [LashMaterial
 To provide control over how much the Material's height-based displacement Normal direction is affected by the Below Material's displaced surface normal, the [`osl/LaD/ToParts`](../osl/LaD/ToParts.osl) shader has an added Cascade Normal parameter to adjust its influence.
 Given its greater functionality and cleaner top-level Material Layering interconnection graph, this is the preferred Material definition macro over the [LashMaterial](#lashmaterial) macro layered with the [LashLayer](#lashlayer) or [LashLayers](#lashlayers) macros.
 
-![LashMaterialLink](media/LashMaterialLink.png) 
+![LashCascade](media/LashMaterialLink.png) 
 
 [Top](#Top)
 [TOC](#table-of-contents)
