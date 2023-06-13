@@ -1,7 +1,7 @@
 <a name="Top"></a>
 # LaSh
 
-![Layering](media/Layering1.png)
+![Layering](media/Layering2.png)
 
 LaSh is a Material layering system for use with RenderMan based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*]().
 Derived from the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home), it has been expanded upon and reimplemented using the latest shading and rendering technology.
@@ -116,7 +116,7 @@ Note this file does not generate the *Mask* values and displacement pattern show
 The [`katana/project/Layers.katana`](../katana/project/) file uses the supplied [LashLayers](#lashlayers) macro to layer up to six LaSh Materials.
 Three are pre-layered in the example scene, but it contains two others so you can easily experiment with the layering functionality.
 
-![Layers](media/Layering.png)
+![Layers](media/Layering02.png)
 ![Layers](media/Layers.png)
 
 [Top](#Top)
