@@ -214,7 +214,7 @@ It does so by combining a slightly modified shading graph from the [LashMaterial
 To provide control over how much the Material's height-based displacement Normal direction is affected by the Below Material's displaced surface normal, the [`osl/LaD/ToParts`](../osl/LaD/ToParts.osl) shader has an added Cascade Normal parameter to adjust its influence.
 Given its greater functionality and cleaner top-level Material Layering interconnection graph, this is the preferred Material definition macro over the [LashMaterial](#lashmaterial) macro layered with the [LashLayer](#lashlayer) or [LashLayers](#lashlayers) macros.
 
-![LashCascade](media/LashMaterialLink.png) 
+![LashMaterialLink](media/LashMaterialLink.png) 
 
 [Top](#Top)
 [TOC](#table-of-contents)
