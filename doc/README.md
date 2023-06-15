@@ -3,7 +3,7 @@
 
 ![Layering](media/Layering3.png)
 
-LaSh is a Material layering system for use with RenderMan based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*]().
+LaSh is a Material layering system for use with RenderMan based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://doi.org/10.1145/3603521.3604289).
 Derived from the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home), it has been expanded upon and reimplemented using the latest shading and rendering technology.
 
 LaSh implements these key features:
@@ -19,7 +19,7 @@ This layering implementation uses the artistically intuitive notions of Thicknes
 
 The strength of the LaSh system is derived from these capabilities, resulting in its ability to define a library of self-contained, displaced Materials that can easily be combined or layered in a flexible, intuitively controlled, yet physically plausible way simply by connecting them in the desired layering order.
 
-The rest of this documentation assumes you have read and are familiar with the contents of the [*Layering Displaced Materials with Thickness, Accumulation, and Size*]() paper, as it is only concerned with the implementation of that system and is not designed to be a separate tutorial about it.
+The rest of this documentation assumes you have read and are familiar with the contents of the [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://doi.org/10.1145/3603521.3604289) paper, as it is only concerned with the implementation of that system and is not designed to be a separate tutorial about it.
 
 ## Table of Contents
 
@@ -68,7 +68,9 @@ when displacements accumulate, they increase the resulting Material's *Bulk*.
 Two additional values are contained in the [LaD struct](../osl/include/LaD.h): *Tau Scale* and *Nd*.
 *Tau Scale* is used to make any necessary or desired correction to the *Bulk*'s effect on the optical thickness of the layered BxDFs, and *Nd* contains the previous LaD's displaced surface normal in order to allow the possibility of cascading height-based displacements.
 
-**Note:** the displacement *Size* attribute described in the paper has been renamed *Bulk* in this implemenation to disambiguate it from the *Size* pattern variation (a.k.a. signal) attribute, and the **Size** pattern generation control parameter. See **Section 3** and **Section 5** of the paper for more information about Size.
+**Note:** the displacement *Size* attribute described in the paper has been renamed *Bulk* in this implemenation to disambiguate it from the **Size** pattern generation control parameter and
+the pattern variation (a.k.a. signal) *Size* attribute.
+See **Section 3** and **Section 5** of the paper for more information about Size.
 
 [TOC](#table-of-contents)
 
@@ -195,6 +197,9 @@ It exposes all the [LamaSurface](https://rmanwiki.pixar.com/display/REN25/LamaSu
 
 **Section 7.3** of the paper describes an enhancement based on cascading height-based displacements.
 In order to support this possibility, this implementation has been updated to include *Nd* in its [LaD_struct](../osl/include/LaD.h) defintion.
+*Nd* contains the Material's displaced surface normal so that an overlying Material's displacement can make use of it.
+
+![DispCascade](media/DispCascade.png)
 
 ### Daisy Chained Materials
 
