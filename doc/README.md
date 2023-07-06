@@ -3,7 +3,7 @@
 
 ![Layering](media/Layering3.png)
 
-LaSh is a Material layering system for use with RenderMan based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://doi.org/10.1145/3603521.3604289).
+LaSh is a Material layering system for use with RenderMan based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dp2023.digiproconf.org/program/program-9/).
 Derived from the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home), it has been expanded upon and reimplemented using the latest shading and rendering technology.
 
 LaSh implements these key features:
@@ -19,7 +19,7 @@ This layering implementation uses the artistically intuitive notions of Thicknes
 
 The strength of the LaSh system is derived from these capabilities, resulting in its ability to define a library of self-contained, displaced Materials that can easily be combined or layered in a flexible, intuitively controlled, yet physically plausible way simply by connecting them in the desired layering order.
 
-The rest of this documentation assumes you have read and are familiar with the contents of the [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://doi.org/10.1145/3603521.3604289) paper, as it is only concerned with the implementation of that system and is not designed to be a separate tutorial about it.
+The rest of this documentation assumes you have read and are familiar with the contents of the [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dp2023.digiproconf.org/program/program-9/) paper, as it is only concerned with the implementation of that system and is not designed to be a separate tutorial about it.
 
 ## Table of Contents
 
