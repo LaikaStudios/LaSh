@@ -62,11 +62,11 @@ shader LaD_FromParts
     float TauScale = 1.0
     [[
         string label = "Tau Scale",
-        int slider = 1, float slidermin = 0.1, float slidermax = 10.0, float slidercenter = 1.0,
+        int slider = 1, float slidermin = 0.2, float slidermax = 5.0, float slidercenter = 1.0,
         string help =
-            "<b>Tau Scale</b> controls the scale between displacement "
-            "<b>Bulk</b> and the optical density output <b>Tau</b> "
-            "produced by the <b>LaD_Layer</b> node. "
+            "<b>Tau Scale</b> provides a means to adjust the "
+            "optical density output, <b>Tau</b>, computed by "
+            "the <b>LaD_Layer</b> node. "
     ]],
 
     normal Nd = N

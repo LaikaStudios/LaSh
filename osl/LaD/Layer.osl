@@ -43,18 +43,19 @@ shader LaD_Layer
 {
     // BxDF Optical Thickness.
     // We're creating virtual, positive separation between the
-    // Above and Below variations by offsetting them by Bulk.
+    // Above and Below displacements by offsetting them with Bulk.
     normal  Non = N;
     getattribute( "builtin", "Non", Non );
 
     float cosA = dot( normalize(Above.DeltaP), Non );
-    Tau = cosA * length(Above.DeltaP) + Above.Bulk;
+    Tau = Above.Bulk + cosA * length(Above.DeltaP);
 
-    // If the Above Thickness is 0, then its
-    // variations are all that will be present.
-    float cosB = dot( normalize(Below.DeltaP), -Non );
-    Tau += (cosB * length(Below.DeltaP) + Below.Bulk) * Above.Thickness;
+    // Perhaps couterintuitively, if the Above Thickness
+    // is 0, its variations are all that will be present.
+    float cosB = dot( normalize(Below.DeltaP), Non );
+    Tau += (Below.Bulk - cosB * length(Below.DeltaP)) * Above.Thickness;
 
+    // Accumulation offset.
     Tau += Above.Accumulation * Below.Bulk;
 
     Tau *= Above.TauScale;
