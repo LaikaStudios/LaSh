@@ -47,13 +47,12 @@ shader LaD_Layer
     normal  Non = N;
     getattribute( "builtin", "Non", Non );
 
-    float cosA = dot( normalize(Above.DeltaP), Non );
-    Tau = Above.Bulk + cosA * length(Above.DeltaP);
+    // Above Material displacement influence is always present.
+    Tau = Above.Bulk + dot( Above.DeltaP, Non );
 
     // Perhaps couterintuitively, if the Above Thickness
     // is 0, its variations are all that will be present.
-    float cosB = dot( normalize(Below.DeltaP), Non );
-    Tau += (Below.Bulk - cosB * length(Below.DeltaP)) * Above.Thickness;
+    Tau += ( Below.Bulk - dot( Below.DeltaP, Non )) * Above.Thickness;
 
     // Accumulation offset.
     Tau += Above.Accumulation * Below.Bulk;
