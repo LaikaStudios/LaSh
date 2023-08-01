@@ -140,7 +140,7 @@ The [Katana](https://learn.foundry.com/katana/6.0/Content/learn_katana.html) [**
 There are also additional macros that provide other useful functionality.
 Other than the [LashMaterial](#lashmaterial) macro, which contains a Material created by the user, the contents of these ShadingGroup Macros are not altered or exposed.
 
-If you are using another application's shading system, you'll need use that system's shading capabilities to assemble these functional blocks yourself with the supplied [`osl`](../osl) shading nodes.
+If you are using another application's shading system, you'll need use that system's shading capabilities to assemble these functional blocks yourself with the supplied [`osl`](../osl) shading nodes, or translate them into a different shading langauge.
 
 ### LashMaterial
 
@@ -156,7 +156,7 @@ Its content is used to define all the characteristics of the desired Material in
 ### LashLayer
 
 This macro is a direct implementation of the block diagram shown in **Figure 3** of the paper.
-The [LaD_Layer](../osl/LaD/Layer.osl) shading node implements both **Listing 2** and **Listing 3** components from the paper that are referenced in the **Figure 3** block diagram.
+The [LaD_Layer](../osl/LaD/Layer.osl) shading node implements both **Listing 2** and **Listing 3** components from the paper that are referenced in the **Figure 3** block diagram. This represents "vertical" layering in the parlance of [MaterialX](https://materialx.org/).
 
 ![LashLayer](media/LashLayerMacro.png)
 
@@ -174,7 +174,7 @@ This macro contains a number of cascaded [LashLayer](#lashlayer) macros as a con
 
 ### LashMix
 
-This macro does a simple blend between any two LaSh Materials, linearly interpolating all their Material properties.
+This macro does a simple blend between any two LaSh Materials, linearly interpolating all their Material properties. This operation represents "horizontal" Material layering in the parlance of [MaterialX](https://materialx.org/).
 
 ![LashMix](media/LashMixMacro.png)
 
@@ -183,8 +183,8 @@ This macro does a simple blend between any two LaSh Materials, linearly interpol
 
 ### LashSurface
 
-This macro implements the conversion of a LaSh Material into prmanBxdf and prmanDisplacement as shown in **Figure 4** of the paper.
-It exposes all the [LamaSurface](https://rmanwiki.pixar.com/display/REN25/LamaSurface) parameters for controlling the RenderMan BxDF shading functionality.
+This macro implements the conversion of a LaSh Material into a prmanBxdf and prmanDisplacement as shown in **Figure 4** of the paper.
+It also exposes all the [LamaSurface](https://rmanwiki.pixar.com/display/REN25/LamaSurface) parameters for controlling the RenderMan BxDF shading functionality.
 
 ![LashSurface](media/LashSurfaceMacro.png)
 
@@ -203,8 +203,8 @@ In order to support this possibility, this implementation has been updated to in
 
 ### Daisy Chained Materials
 
-Rather than using the [LashLayer](#lashlayer) or the [LashLayers](#lashlayers) node to define the layering order of Materials, the layering functionality of **Figure 3** in the paper can be incorporated into a Material's definition.
-In this way, the Material node has a LaSh Material (LaM) input and output, and the layering order is determined by the order in which the chained Material nodes are connected.
+Rather than using the [LashLayer](#lashlayer) or [LashLayers](#lashlayers) nodes to define the layering order of Materials, the layering functionality of **Figure 3** in the paper can be incorporated into a Material's definition.
+In this way, the Material node has a LaSh Material (LaM) input and output, and the layering order is determined by the order in which the linked Material nodes are connected.
 This also allows Materials to use [Cascading Displacement](#cascading-displacement).
 
 ![Cascade](media/Cascade.png)
@@ -217,7 +217,7 @@ This macro incorporates both of the previous enhancements, allowing for an alter
 It does so by combining a slightly modified shading graph from the [LashMaterial](#lashmaterial) macro that uses the Below Material's [LaD_struct.Nd](../osl/include/LaD.h) to define the **displace_Height** Normal direction, and an internal [LashLayer](#lashlayer) macro to layer the Material's internal shading graph over the Below Material input.
 
 To provide control over how much the Material's height-based displacement Normal direction is affected by the Below Material's displaced surface normal, the [`osl/LaD/ToParts`](../osl/LaD/ToParts.osl) shader has an added Cascade Normal parameter to adjust its influence.
-Given its greater functionality and cleaner top-level Material Layering interconnection graph, this is the preferred Material definition macro over the [LashMaterial](#lashmaterial) macro layered with the [LashLayer](#lashlayer) or [LashLayers](#lashlayers) macros.
+Given its greater functionality and cleaner top-level Material Layering interconnection graph, this is the preferred Material definition macro over the [LashMaterial](#lashmaterial) macro that is layered with the [LashLayer](#lashlayer) or [LashLayers](#lashlayers) macros.
 
 ![LashCascade](media/LashMaterialLink.png) 
 
