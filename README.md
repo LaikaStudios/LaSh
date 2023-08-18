@@ -2,7 +2,7 @@
 
 ![LashLayers](media/Layers1280x640.jpg)
 
-This repository and its associated documentation contain the latest public reference implementation of the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dl.acm.org/doi/10.1145/3603521.3604289).
+This repository and its associated documentation contain the latest public reference implementation of the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://www.shading.icu/home/papers-presentations-and-research) <b>*</b>.
 
 Similar to the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home) from which it is derived, LaSh incorporates bxdfs and displacements into its definition of a LaSh Material so that it can represent a true physical substance, and implements a bxdf and displacement layering capability so LaSh Materials can be easily layered in a physically plausible way.
 
@@ -92,3 +92,7 @@ Licensed under either of
 * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
+
+#
+<b>*</b> The paper in the ACM Digital Library is an older version which contains errors in Equations 16 and 17. The paper was revised prior to DigiPro 2023, but the older version was published instead. The slide presentation at DigiPro showed the correct versions of these equations, and this repository contains the correct implementation. I am working to resolve this issue so the ACM published paper is the correct version.
+
