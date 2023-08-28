@@ -13,6 +13,8 @@ As a bonus, this repository also contains an updated version of the [Siggraph 20
 Please feel free to use the [Discussions Tab](https://github.com/LaikaStudios/LaSh/discussions).
 I'd love you hear what you think, or to discuss any issues or thoughts you may have about this repository and its Layered Shading implementation.
 
+#
+<b>*</b> The paper published in the [ACM Digital Library](https://dl.acm.org/doi/10.1145/3603521.3604289) is an older version which contains errors in **Equations 16 and 17**. The paper was revised prior to DigiPro 2023, but the older version was inadvertently published instead. The presentation at DigiPro showed the correct versions of these equations, and this repository contains the correct implementation. I am working to resolve this issue with the ACM so the revised paper is also published there.
 
 # Requirements
 * `make`
@@ -92,7 +94,4 @@ Licensed under either of
 * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
-
-#
-<b>*</b> The paper in the ACM Digital Library is an older version which contains errors in Equations 16 and 17. The paper was revised prior to DigiPro 2023, but the older version was published instead. The slide presentation at DigiPro showed the correct versions of these equations, and this repository contains the correct implementation. I am working to resolve this issue so the ACM published paper is the correct version.
 

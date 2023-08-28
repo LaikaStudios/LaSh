@@ -21,8 +21,9 @@ The strength of the LaSh system is derived from these capabilities, resulting in
 
 The rest of this documentation assumes you have read and are familiar with the contents of the [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://www.shading.icu/home/papers-presentations-and-research) <b>*</b> paper, as it is only concerned with the implementation of that system and is not designed to be a separate tutorial about it.
 
-# 
-<b>*</b> The paper in the ACM Digital Library is an older version which contains errors in Equations 16 and 17. The paper was revised prior to DigiPro 2023, but the older version was published instead. The slide presentation at DigiPro showed the correct versions of these equations, and this repository contains the correct implementation. I am working to resolve this issue so the ACM published paper is the correct version.
+#
+<b>*</b> The paper published in the [ACM Digital Library](https://dl.acm.org/doi/10.1145/3603521.3604289) is an older version which contains errors in **Equations 16 and 17**. The paper was revised prior to DigiPro 2023, but the older version was inadvertently published instead. The presentation at DigiPro showed the correct versions of these equations, and this repository contains the correct implementation. I am working to resolve this issue with the ACM so the revised paper is also published there.
+
 ## Table of Contents
 
 1. [The LaSh Material](#the-lash-material)
