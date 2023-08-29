@@ -63,7 +63,7 @@ You can also `cd osl` into the osl directory and `make` the shaders there.
 The osl Makefile will only make shaders for .osl files that are more recent than their complied shader.
 In this way, you can edit a source file and execute `make` from within the osl directory and only the updated source file(s) will be built.
 
-    `make clean` and `make help` can also be executed from either the top-level directory or the osl directories.
+    `make clean` and `make help` can also be executed from either the top-level directory or the osl directory.
 `make clean` removes the built shaders, and `make help` provides additional information about the make system and how it's controlled.
 
 1. Set these environment variables appropriately.
