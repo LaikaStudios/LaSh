@@ -3,7 +3,7 @@
 
 ![Layering](media/Layering3.png)
 
-LaSh is a Material layering system based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://www.shading.icu/home/papers-presentations-and-research) <b>*</b>.
+LaSh is a Material layering system based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dl.acm.org/doi/10.1145/3603521.3604289).
 Derived from the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home), it has been expanded upon and reimplemented using the latest shading and rendering technology.
 
 LaSh implements these key features:
@@ -19,17 +19,14 @@ This layering implementation uses the artistically intuitive notions of Thicknes
 
 The strength of the LaSh system is derived from these capabilities, resulting in its ability to define a library of self-contained, displaced Materials that can easily be combined or layered in a flexible, intuitively controlled, yet physically plausible way simply by connecting them in the desired layering order.
 
-The rest of this documentation assumes you have read and are familiar with the contents of the [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://www.shading.icu/home/papers-presentations-and-research) <b>*</b> paper, as it is only concerned with the implementation of that system and is not designed to be a separate tutorial about it.
-
-#
-<b>*</b> The paper published in the [ACM Digital Library](https://dl.acm.org/doi/10.1145/3603521.3604289) is an older version which contains errors in **Equations 16 and 17**. The paper was revised prior to DigiPro 2023, but the older version was inadvertently published instead. The presentation at DigiPro showed the correct versions of these equations, and this repository contains the correct implementation. I am working to resolve this issue with the ACM so the revised paper is also published there.
+The rest of this documentation assumes you have read and are familiar with the contents of the [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dl.acm.org/doi/10.1145/3603521.3604289) paper, as it is only concerned with the implementation of that system and is not designed to be a separate tutorial about it.
 
 ## Table of Contents
 
 1. [The LaSh Material](#the-lash-material)
 1. [Examples](#examples)
-    1. [Thickness, Accumulation, and Bulk](#thickness-accumulation-and-bulk)
-    1. [Thickness, Accumulation, and Tau Scale](#thickness-accumulation-and-tau-scale)
+    1. [Thickness, Accumulation, and *Bulk*](#thickness-accumulation-and-bulk)
+    1. [Thickness, Accumulation, Tau Scale, and *Tau*](#thickness-accumulation-tau-scale-and-tau)
     1. [Rusting Painted Metal](#rusting-painted-metal)
     1. [Layering Multiple Materials](#layering-multiple-materials)
     1. [Mixing Materials](#mixing-materials)
@@ -49,27 +46,27 @@ The rest of this documentation assumes you have read and are familiar with the c
 A LaSh Material (**LaM**) is composed of two parts: its LaSh Bxdf (**LaB**) and its LaSh Displacement (**LaD**).
 This is similar to a [MaterialX](https://materialx.org/) **Material Node** that contains both a surface shader and a displacement shader.
 
-A **LaB** is composed of a [Lama Bxdf](https://rmanwiki.pixar.com/display/REN25/MaterialX+Lama) - which can itself be composed of any number of Lama Bxdfs combined in whatever way you want - plus its *Mask*.
-The *Mask* defines where the LaB is present and where it isn't (or any intermediate value as well).
-The LaB *Mask* typically has a relatively sharp transition to 0 at the edge of where the Material ends (assuming it's not present everywhere, in which case the *Mask* is a constant value of 1).
+A **LaB** is composed of a [Lama Bxdf](https://rmanwiki.pixar.com/display/REN25/MaterialX+Lama) - which can itself be composed of any number of Lama Bxdfs combined in whatever way you want - plus its Mask.
+The Mask defines where the LaB is present and where it isn't (or any intermediate value as well).
+The LaB Mask typically has a relatively sharp transition to 0 at the edge of where the Material ends (assuming it's not present everywhere, in which case the Mask is a constant value of 1).
 
 A **LaD** is composed of several parts.
 The first is the displacement itself, which is represented as the change in the surface point: *DeltaP*.
 As explained in the [Siggraph 2022 OSL Shaders for RenderMan](https://dl.acm.org/doi/abs/10.1145/3532724.3535604) course, this is a much more efficient and useful displacement representation than the displaced point itself.
 The LaD *Bulk* is another critical displacement-related value.
 It allows LaDs to accumulate mass as they're layered over each other.
-The LaD *Mask* defines the displacement transition at the edge of the Material.
-A LaD *Mask* needs a slightly "softer" transition than the LaB *Mask*, since rendered displacement does not respond well to severe discontinuities, and abrupt displacement transitions also aren't very realistic looking.
+The LaD Mask defines the displacement transition at the edge of the Material.
+A LaD Mask needs a slightly "softer" transition than the LaB Mask, since rendered displacement does not respond well to severe discontinuities, and abrupt displacement transitions also aren't very realistic looking.
 
-Next are the LaD layering controls: *Thickness* and *Accumulation*.
+Next are the LaD layering controls: Thickness and Accumulation.
 These provide the user with the ability to adjust the physical characteristics of the layered displacement's composition.
-*Thickness* determines what percentage of the underlying displacement
+Thickness determines what percentage of the underlying displacement
 remains or is obliterated by the overlying LaD being applied.
-And *Accumulation* determines whether the applied LaD’s displacement will result in the build-up of material in the resulting surface:
+And Accumulation determines whether the applied LaD’s displacement will result in the build-up of material in the resulting surface:
 when displacements accumulate, they increase the resulting Material's *Bulk*.
 
-Two additional values are contained in the [LaD struct](../osl/include/LaD.h): *Tau Scale* and *Nd*.
-*Tau Scale* is used to make any necessary or desired correction to the *Bulk*'s effect on the optical thickness of the layered BxDFs, and *Nd* contains the previous LaD's displaced surface normal in order to allow the possibility of cascading height-based displacements.
+Two additional values are contained in the [LaD struct](../osl/include/LaD.h): Tau Scale and *Nd*.
+Tau Scale is used to make any necessary or desired correction to the *Bulk*'s effect on the optical thickness of the layered BxDFs, and *Nd* contains the previous LaD's displaced surface normal in order to allow the possibility of cascading height-based displacements.
 
 **Note:** the displacement *Size* attribute described in the paper has been renamed *Bulk* in this implemenation to disambiguate it from the **Size** pattern generation control parameter and
 the pattern variation (a.k.a. signal) *Size* attribute.
@@ -81,9 +78,9 @@ See **Section 3** and **Section 5** of the paper for more information about Size
 
 These examples use the supplied [Katana Macros](#katana-macros) to define the encapsulated LaSh Materials, their layering, and their translation into a prmanBxdf and prmanDisplacement.
 
-### Thickness, Accumulation, and Bulk
+### Thickness, Accumulation, and *Bulk*
 
-The [`katana/project/ThickAndAccum.katana`](../katana/project) file can be used to explore the effects of *Thickness* and *Accumulation* on the layered Materials and the resulting *Bulk*.
+The [`katana/project/ThickAndAccum.katana`](../katana/project) file can be used to explore the effects of Thickness and Accumulation on the layered Materials and the resulting *Bulk*.
 This scene can be used to generate the images in **Figure 6** of the paper.
 Two opaque Materials are layered (small green bumps over large blue bumps), and the resulting *Bulk* value is shown in grey-scale.
 
@@ -93,10 +90,10 @@ Two opaque Materials are layered (small green bumps over large blue bumps), and 
 [Top](#Top)
 [TOC](#table-of-contents)
 
-### Thickness, Accumulation, and Tau Scale
+### Thickness, Accumulation, Tau Scale, and *Tau*
 
-The [`katana/project/Tau.katana`](../katana/project) file can be used to explore the effects of *Thickness*, *Accumulation*, and *Tau Scale* on the resulting layered Material. This scene can be used to generate the images in **Figure 7** of the paper.
-Transparent cherry syrup is layered over a blue waffle, showing the effects of *Thickness*, *Accumulation*, and *Tau Scale* on the resuling optical thickness (Tau) of the layered result.
+The [`katana/project/Tau.katana`](../katana/project) file can be used to explore the effects of Thickness, Accumulation, and Tau Scale on the resulting layered Material. This scene can be used to generate the images in **Figure 7** of the paper.
+Transparent cherry syrup is layered over a blue waffle, showing the effects of Thickness, Accumulation, and Tau Scale on the resuling optical thickness (*Tau*) of the layered result.
 
 ![Thickness and Accumulation](media/TauTA.png)
 ![ThickAndAccum](media/Tau.png)
@@ -107,8 +104,8 @@ Transparent cherry syrup is layered over a blue waffle, showing the effects of *
 ### Rusting Painted Metal
 
 The [`katana/project/RustingPainedMetal.katana`](../katana/project) file contains an example of a high-level Material node discussed in the paper's **Results Section 6**.
-It uses an Age parameter to control procedurally generated patterns which define separate LaB and LaD *Mask* values and displacement.
-Note this file does not generate the *Mask* values and displacement pattern shown in **Figure 9** and **10** of the paper, which use fixed patterns.
+It uses an Age parameter to control procedurally generated patterns which define separate LaB and LaD Mask values and displacement.
+Note this file does not generate the Mask values and displacement pattern shown in **Figure 9** and **10** of the paper, which use fixed patterns.
 
 ![RustingPaintedMetal](media/RustRange.png)
 ![RustingPaintedMetal](media/RustingPaintedMetal.png)

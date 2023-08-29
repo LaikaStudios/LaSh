@@ -2,19 +2,16 @@
 
 ![LashLayers](media/Layers1280x640.jpg)
 
-This repository and its associated documentation contain the latest public reference implementation of the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://www.shading.icu/home/papers-presentations-and-research) <b>*</b>.
+This repository and its associated documentation contain the latest public reference implementation of the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dl.acm.org/doi/10.1145/3603521.3604289).
 
 Similar to the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home) from which it is derived, LaSh incorporates bxdfs and displacements into its definition of a LaSh Material so that it can represent a true physical substance, and implements a bxdf and displacement layering capability so LaSh Materials can be easily layered in a physically plausible way.
 
 Documentation is in the [`doc`](doc) directory.
 
-As a bonus, this repository also contains an updated version of the [Siggraph 2022 OSL Shaders for RenderMan](https://dl.acm.org/doi/abs/10.1145/3532724.3535604) course [Supplementary Material](https://github.com/LaikaStudios/OSLShadersForRenderMan) shading nodes.
+As a bonus, this repository also contains the [Siggraph 2023 Shader Writing in Open Shading Language](https://dl.acm.org/doi/10.1145/3587423.3597945) course [Supplementary Material](https://github.com/LaikaStudios/OSLShaderWriting) shading nodes.
 
 Please feel free to use the [Discussions Tab](https://github.com/LaikaStudios/LaSh/discussions).
 I'd love you hear what you think, or to discuss any issues or thoughts you may have about this repository and its Layered Shading implementation.
-
-#
-<b>*</b> The paper published in the [ACM Digital Library](https://dl.acm.org/doi/10.1145/3603521.3604289) is an older version which contains errors in **Equations 16 and 17**. The paper was revised prior to DigiPro 2023, but the older version was inadvertently published instead. The presentation at DigiPro showed the correct versions of these equations, and this repository contains the correct implementation. I am working to resolve this issue with the ACM so the revised paper is also published there.
 
 # Requirements
 * `make`
@@ -88,9 +85,9 @@ In this way, you can edit a source file and execute `make` from within the osl d
         so that katana will load them when it starts.
 
 # License
-Licensed under either of
+This repository's content is licensed under either the
 
-* Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+* Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0) or
 * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
