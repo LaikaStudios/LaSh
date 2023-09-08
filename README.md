@@ -31,7 +31,7 @@ To use the supplied repository content as is:
 
 1. Set up RenderMan:
 
-    1. Install [RenderManProServer](https://renderman.pixar.com/store) and ensure it is functioning properly.
+    1. [Install RenderManProServer](https://renderman.pixar.com/store) and ensure it is functioning properly.
 
     1. Optionally install [Katana](https://www.foundry.com/products/katana) and [RenderMan for Katana](https://renderman.pixar.com/bridge-tools) and ensure they are functioning properly.
      While optional, this step is highly recommended, as the core LaSh functionality is packaged into Katana [ShadingGroup](https://learn.foundry.com/katana/Content/ug/adding_assigning_materials/using_the_shadinggroup_node.html) macros.
@@ -67,7 +67,7 @@ In this way, you can edit a source file and execute `make` from within the osl d
 `make clean` removes the built shaders, and `make help` provides additional information about the make system and how it's controlled.
 
 1. Set these environment variables appropriately.
-    1. This is required so the built shaders can be found by [RenderMan](https://rmanwiki.pixar.com/display/REN24/RenderMan) and a [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools):
+    1. This is required so the built shaders can be found by [RenderMan](https://rmanwiki.pixar.com/display/REN25) and a [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools):
 
         - RMAN_SHADERPATH
 
