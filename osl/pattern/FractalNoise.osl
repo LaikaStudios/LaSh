@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -42,8 +42,6 @@ shader pattern_FractalNoise
         string readOnly = "True",
         string help =
             "The <b>Size</b> of the connected <b>Space</b>. "
-            "Along with the pattern's <b>Size</b> parameter, this determines "
-            "the size of the resulting pattern variations this node produces. "
     ]],
 
     float Size = 1.0
@@ -71,6 +69,7 @@ shader pattern_FractalNoise
         string options = "2D:2|3D:3|4D:4",
         string help =
             "Explicitly controls the <b>Dimension</b> of the <b>Noise</b>. "
+            "For best results, use the lowest dimension for your pattern generation space. "
             "This can have a particularly large impact on the <i>Simplex</i> <b>Noise Type</b>. "
     ]],
 
@@ -79,26 +78,10 @@ shader pattern_FractalNoise
         int connectable = 0,
         string label = "Fractal Type",
         string widget = "mapper",
-        string options = "fBm:0|Fractal:1",
+        string options = "Fractal:0|fBm:1",
         string help =
             "Selects whether fractional Brownian motion (<i>fBm</i>) "
             "or a standard <i>Fractal</i> is produced. "
-    ]],
-
-    float Gain = 0.5
-    [[
-        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
-        string conditionalVisPath = "../FractalType",
-        string conditionalVisOp = "equalTo",
-        string conditionalVisValue = "0",
-        string help =
-            "The scaling factor used in <i>fBm</i> to control the contribution of each successive "
-            "iteration. Bigger values are \"rougher\", smaller values are \"smoother\". "
-            "The amplitude of each iteration is <b>Gain</b><tt>^(i-1)</tt>; where <tt>i</tt> is the "
-            "iteration number. "
-            "<p>"
-            "The process starts with the largest basis function pattern with amplitude = 1. "
-            "</p>"
     ]],
 
     float Dimension = 1.0
@@ -107,7 +90,7 @@ shader pattern_FractalNoise
         int slider = 1, float slidermin = 0.0, float slidermax = 1.5,
         string conditionalVisPath = "../FractalType",
         string conditionalVisOp = "equalTo",
-        string conditionalVisValue = "1",
+        string conditionalVisValue = "0",
         string help =
             "The result is a combination of <b>Iterations</b> number of basis function patterns. "
             "<p>"
@@ -116,7 +99,26 @@ shader pattern_FractalNoise
             "and the <b>Dimension</b> value: <br/>"
             "amplitude = <tt>1/(f^ß)</tt>, where <tt>ß = 3-2*</tt><b>Dimension</b>. "
             "</p>"
-            "The process starts with the largest basis function pattern with amplitude = <tt>1</tt>. "
+            "The process starts with the largest basis function pattern with <tt>amplitude</tt> = 1. "
+    ]],
+
+    float Gain = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string conditionalVisPath = "../FractalType",
+        string conditionalVisOp = "equalTo",
+        string conditionalVisValue = "1",
+        string help =
+            "The scaling factor used in <i>fBm</i> to control the contribution of each successive "
+            "iteration. Bigger values are \"rougher\", smaller values are \"smoother\". "
+            "The amplitude of each iteration is <b>Gain</b><tt>^(i-1)</tt>; where <tt>i</tt> is the "
+            "iteration number. "
+            "<p>"
+            "The process starts with the largest basis function pattern with <tt>amplitude</tt> = 1. "
+            "Note that a <b>Gain</b> of 0 or 1 produces no change in contribution for "
+            "successive iterations, and therefore <b>Erosion</b> effects can't be produced "
+            "for the extreme ends of the <b>Gain</b> range. "
+            "</p>"
     ]],
 
     float Lacunarity = 2.0
@@ -131,7 +133,7 @@ shader pattern_FractalNoise
             "<tt>f(i+1) = f(i)*</tt><b>Lacunarity</b>, where <tt>f</tt> is frequency "
             "and <tt>i</tt> is iteration number. "
             "</p>"
-            "The process starts with the largest basis function pattern at <tt>f</tt> = <b>Frequency</b>. "
+            "The process starts with the largest basis function pattern at <tt>f</tt> = 1. "
     ]],
 
     int Iterations = 5
@@ -146,7 +148,16 @@ shader pattern_FractalNoise
             "pattern generated before it. "
             "</p>"
             "The process starts with the largest basis function pattern at "
-            "<tt>f</tt> = <b>Frequency</b> and amplitude = <tt>1</tt>. "
+            "<tt>f</tt> = 1 and <tt>amplitude</tt> = 1. "
+    ]],
+
+    float Contrast = 0.0
+    [[
+        string label = "Contrast",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Controls the amount of range expansion that is applied to the basis function, "
+            "increasing the <b>Contrast</b> of the result. "
     ]],
 
     float Erosion = 0.0
@@ -164,6 +175,16 @@ shader pattern_FractalNoise
             "<b>Erosion</b> adjusts that offset. "
     ]],
 
+    float Distortion = 0.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Controls what percentage the <b>Space</b> value is warped "
+            "for succesive iterations during the pattern generation process. "
+            "This distorion is based on the previous iteration's result, "
+            "so this only has an effect when <b>Iterations</b> is 2 or more. "
+    ]],
+
     float Variation = 0.0
     [[
         int slider = 1, float slidermin = 0.0, float slidermax = 10.0,
@@ -171,6 +192,56 @@ shader pattern_FractalNoise
             "This varies the result without changing any of its fundamental "
             "characteristics. Can be used to animate the resulting pattern, "
             "or just produce a different variant of it. "
+    ]],
+
+    int Periodic = 0
+    [[
+        int connectable = 0,
+        string widget = "checkBox",
+        string conditionalVisPath = "../NoiseType",
+        string conditionalVisOp = "notEqualTo",
+        string conditionalVisValue = "usimplex",
+        string help =
+            "Does the resulting pattern repeat or not? "
+    ]],
+
+    int SpacePeriod = 5
+    [[
+        int connectable = 0,
+        string label = "Space Period",
+        int slider = 1, int slidermin = 1, int slidermax = 20,
+        string conditionalVisOp = "and",
+        string conditionalVisLeft = "conditionalVis0",
+        string conditionalVisRight = "conditionalVis1",
+        string conditionalVis0Path = "../Periodic",
+        string conditionalVis0Op = "equalTo",
+        string conditionalVis0Value = "1",
+        string conditionalVis1Path = "../NoiseType",
+        string conditionalVis1Op = "notEqualTo",
+        string conditionalVis1Value = "usimplex",
+        string help =
+            "At what <b>Space</b> dimension should the pattern repeat? "
+            "This defines a cube in the <b>Space</b>, where all cubes "
+            "of this <b>Space Period</b> size contain the same pattern, "
+            "and the pattern tiles from one cube to the next. "
+    ]],
+
+    int VariationPeriod = 5
+    [[
+        int connectable = 0,
+        string label = "Variation Period",
+        string conditionalVisOp = "and",
+        string conditionalVisLeft = "conditionalVis0",
+        string conditionalVisRight = "conditionalVis1",
+        string conditionalVis0Path = "../Periodic",
+        string conditionalVis0Op = "equalTo",
+        string conditionalVis0Value = "1",
+        string conditionalVis1Path = "../NoiseType",
+        string conditionalVis1Op = "notEqualTo",
+        string conditionalVis1Value = "usimplex",
+        int slider = 1, int slidermin = 1, int slidermax = 20,
+        string help =
+            "Sets the repetition interval for any <b>Variation.</b> "
     ]],
 
     output float  Float = 0.0,
@@ -189,17 +260,17 @@ shader pattern_FractalNoise
     {
         Q = P; // Referencing P is required for any down-stream auto-differentiation.
         getattribute( "builtin", "Po", Q ); // Use un-displaced P.
-        getattribute( "primvar", "__Pref", Q ); // Use Pref if present.
+        getattribute( "primvar", "__Pref", Q ); // Use __Pref if present.
         Q = transform( "common", "object", Q ); // Correct in all cases.
     }
 
     // Size scaling.
     float  size = max( 1.0e-6, Size );
-    Q /= size;
     OutSize = SpaceSize * size;
+    Q /= size;
 
     // Initialize the iteration variables.
-    float  freqi = 1.0;
+    float  freq = 1.0;
     color  sum = color(0.0);
     color  mag = color(1.0);
 
@@ -208,43 +279,78 @@ shader pattern_FractalNoise
     // Compute the fractal.
     for( int i=0; i < Iterations; i++ )
     {
-        // This iteration's frequency.
-        point  Qi = Q*freqi;
+        // This iteration's pattern.
+        color  iP;
 
-        // Variation offset.
+        // This iteration's Variation offset.
         float  variation = Variation + i*Lacunarity;
 
-        // Accumulate this iteration's noise pattern.
-        if( 2 == NoiseDim )
+        // Compute this iteration's pattern.
+        if( 1 == Periodic && "usimplex" != NoiseType )
         {
-            Color += mag * noise( NoiseType, Qi.x + variation, Qi.y + variation );
-        }
-        else if( 3 == NoiseDim )
-        {
-            Color += mag * noise( NoiseType, Qi + point(variation) );
-        }
-        else // 4 == NoiseDim
-        {
-            Color += mag * noise( NoiseType, Qi, variation );
-        }
+            // This iteration's periodic space.
+            float  interval = round( freq*SpacePeriod );
+            point  iQ = Q*interval/SpacePeriod;
 
-        // Update for the next iteration.
-        freqi *= Lacunarity;
-        sum += mag;
-
-        // Erosion adjustment.
-        color  erosion = mix( -Erosion, Erosion, Color/sum );
-
-        // Fractal magnitude of the next iteration.
-        if( FractalType == 0 )
-        {
-            mag = pow( Gain, i+1.0 + 100.0*Gain*erosion );
+            if( 2 == NoiseDim )
+            {
+                point  xyv = point( iQ.x, iQ.y, Variation );
+                iP = pnoise( NoiseType, xyv, SpacePeriod );
+            }
+            else if( 3 == NoiseDim )
+            {
+                iP = pnoise( NoiseType, iQ + vector(Variation), SpacePeriod );
+            }
+            else // 4 == NoiseDim
+            {
+                iP = pnoise( NoiseType, iQ, Variation, SpacePeriod, VariationPeriod );
+            }
         }
         else
         {
-            mag = color(1.0) / pow( freqi, (3.0-2.0*Dimension) + 2.0*erosion );
+            // This iteration's space.
+            point  iQ = Q*freq;
+
+            if( 2 == NoiseDim )
+            {
+                iP = noise( NoiseType, iQ.x + variation, iQ.y + variation );
+            }
+            else if( 3 == NoiseDim )
+            {
+                iP = noise( NoiseType, iQ + vector(variation) );
+            }
+            else // 4 == NoiseDim
+            {
+                iP = noise( NoiseType, iQ, variation );
+            }
+        }
+
+        // Contrast expand the pattern.
+        float  eps = 0.5 * linearstep( 0.2, 1.0, Contrast );
+        iP = mix( iP, smoothstep( eps, 1.0-eps, iP ), linearstep( 0.0, 1.0, 5.0*Contrast ));
+
+        // Add this iteration's contribution to the result.
+        Color += mag * iP;
+
+        // Update the iteration variables for the next iteration.
+        Q += mag * Distortion*vector( iP - color(0.5) );
+        sum += mag;
+        freq *= Lacunarity;
+
+        // Erosion magnitude adjustment.
+        color  erosion = mix( -Erosion, Erosion, Color/sum );
+        if( "uperlin" == NoiseType ) erosion *= 2;
+
+        if( 1 == FractalType )
+        {
+            mag = pow( Gain, i+1.0 + i*erosion );
+        }
+        else
+        {
+            mag = color(1.0) / pow( freq, (3.0-2.0*Dimension) + erosion );
         }
     }
+    // End fractal computation.
 
     // Normalize the result.
     Color /= sum;

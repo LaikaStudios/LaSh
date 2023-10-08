@@ -38,18 +38,6 @@ shader pattern_FractalWorley
         string readOnly = "True",
         string help =
             "The <b>Size</b> of the connected <b>Space</b>. "
-            "Along with the pattern's <b>Size</b> parameter, this determines "
-            "the size of the resulting pattern variations this node produces. "
-    ]],
-
-    int WorleyDim = 3
-    [[
-        int connectable = 0,
-        string label = "Worley Dim",
-        string widget = "mapper",
-        string options = "2D:2|3D:3",
-        string help =
-            "Explicitly controls the <b>Dimension</b> of the <b>Worley</b> pattern. "
     ]],
 
     float Size = 1.0
@@ -75,34 +63,15 @@ shader pattern_FractalWorley
             "Varies the resulting pattern. Useful for animating the effect. "
     ]],
 
-    int FractalType = 1
+    int FractalType = 0
     [[
         int connectable = 0,
         string label = "Fractal Type",
         string widget = "mapper",
-        string options = "fBm:0|Fractal:1",
+        string options = "Fractal:0|fBm:1",
         string help =
             "Selects whether fractional Brownian motion (<i>fBm</i>) "
             "or a standard <i>Fractal</i> is produced. "
-    ]],
-
-    float Gain = 0.5
-    [[
-        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
-        string conditionalVisPath = "../FractalType",
-        string conditionalVisOp = "equalTo",
-        string conditionalVisValue = "0",
-        string help =
-            "The scaling factor used in <i>fBm</i> to control the contribution of each successive "
-            "iteration. Bigger values are \"rougher\", smaller values are \"smoother\". "
-            "The amplitude of each iteration is <b>Gain</b><tt>^(i-1)</tt>; where <tt>i</tt> is the "
-            "iteration number. "
-            "The process starts with the largest basis function pattern with amplitude = 1. "
-            "<p>"
-            "Note that a <b>Gain</b> of 0 or 1 produces no change in contribution for "
-            "successive iterations, and therefore <b>Erosion</b> effects can't be produced "
-            "for the extreme ends of the <b>Gain</b> range. "
-            "</p>"
     ]],
 
     float Dimension = 1.0
@@ -111,7 +80,7 @@ shader pattern_FractalWorley
         int slider = 1, float slidermin = 0.0, float slidermax = 1.5,
         string conditionalVisPath = "../FractalType",
         string conditionalVisOp = "equalTo",
-        string conditionalVisValue = "1",
+        string conditionalVisValue = "0",
         string help =
             "The result is a combination of <b>Iterations</b> number of basis function patterns. "
             "<p>"
@@ -120,7 +89,26 @@ shader pattern_FractalWorley
             "and the <b>Dimension</b> value: <br/>"
             "amplitude = <tt>1/(f^ß)</tt>, where <tt>ß = 3-2*</tt><b>Dimension</b>. "
             "</p>"
-            "The process starts with the largest basis function pattern with amplitude = <tt>1</tt>. "
+            "The process starts with the largest basis function pattern with <tt>amplitude</tt> = 1. "
+    ]],
+
+    float Gain = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string conditionalVisPath = "../FractalType",
+        string conditionalVisOp = "equalTo",
+        string conditionalVisValue = "1",
+        string help =
+            "The scaling factor used in <i>fBm</i> to control the contribution of each successive "
+            "iteration. Bigger values are \"rougher\", smaller values are \"smoother\". "
+            "The amplitude of each iteration is <b>Gain</b><tt>^(i-1)</tt>; where <tt>i</tt> is the "
+            "iteration number. "
+            "<p>"
+            "The process starts with the largest basis function pattern with <tt>amplitude</tt> = 1. "
+            "Note that a <b>Gain</b> of 0 or 1 produces no change in contribution for "
+            "successive iterations, and therefore <b>Erosion</b> effects can't be produced "
+            "for the extreme ends of the <b>Gain</b> range. "
+            "</p>"
     ]],
 
     float Lacunarity = 2.0
@@ -135,7 +123,7 @@ shader pattern_FractalWorley
             "<tt>f(i+1) = f(i)*</tt><b>Lacunarity</b>, where <tt>f</tt> is frequency "
             "and <tt>i</tt> is iteration number. "
             "</p>"
-            "The process starts with the largest basis function pattern at <tt>f</tt> = <b>Frequency</b>. "
+            "The process starts with the largest basis function pattern at <tt>f</tt> = 1. "
     ]],
 
     int Iterations = 5
@@ -150,7 +138,7 @@ shader pattern_FractalWorley
             "pattern generated before it. "
             "</p>"
             "The process starts with the largest basis function pattern at "
-            "<tt>f</tt> = <b>Frequency</b> and amplitude = <tt>1</tt>. "
+            "<tt>f</tt> = 1 and <tt>amplitude</tt> = 1. "
     ]],
 
     float Erosion = 0.0
@@ -183,7 +171,7 @@ shader pattern_FractalWorley
     [[
         string widget = "checkBox",
         string help =
-            "Invert the <b>F</b> output values: 1 &ndash; result. "
+            "Invert the <b>F</b> output values: 1 - result. "
             "This changes their shape from convex to concave. "
     ]],
 
@@ -202,20 +190,17 @@ shader pattern_FractalWorley
     {
         Q = P; // Referencing P is required for any down-stream auto-differentiation.
         getattribute( "builtin", "Po", Q ); // Use un-displaced P.
-        getattribute( "primvar", "__Pref", Q ); // Use Pref if present.
+        getattribute( "primvar", "__Pref", Q ); // Use __Pref if present.
         Q = transform( "common", "object", Q ); // Correct in all cases.
     }
 
     // Size scaling.
     float  size = max( 1.0e-6, Size );
-    Q /= size;
     OutSize = SpaceSize * size;
-
-    // Pattern dimension control.
-    int  zLimit = (3 == WorleyDim) ? 1 : -1;
+    Q /= size;
 
     // Initialize the fractal iteration variables.
-    float  freqi = 1.0;
+    float  freq = 1.0;
     float  f1 = 0.0;
     float  f2 = 0.0;
     float  f1mag = 1.0;
@@ -226,25 +211,25 @@ shader pattern_FractalWorley
     // Compute the fractal.
     for( int i=0; i < Iterations; i++ )
     {
-        // This iteration's frequency.
-        point  Qi = Q*freqi;
+        // This iteration's space.
+        point  iQ = Q*freq;
 
         // Divide Q into cells (unit cubes) and randomly place
         // a point within each. Then measure the distance between
         // the shaded point and the random point in each of the
         // 27 cells that either contain it or are neighbors of it.
-        point  QIndex = floor( Qi );
+        point  QIndex = floor( iQ );
 
         // Variation offset.
         float  variation = Variation + i*Lacunarity;
 
-        f1 = f2 = 20.0; // Ensure these will be changed.
+        f1 = f2 = 5.0; // Ensure these will be changed.
 
         for( int x = -1; x <= 1; x++ )
         {
             for( int y = -1; y <= 1; y++ )
             {
-                for( int z = -1; z <= zLimit; z++ )
+                for( int z = -1; z <= 1; z++ )
                 {
                     // The cell's index and its random offset.
                     point  cellIndex = QIndex + vector(x,y,z);
@@ -253,11 +238,8 @@ shader pattern_FractalWorley
                     // The cell’s jittered point.
                     point cellQ = cellIndex + Jitter*cellOffset;
 
-                    // Remove z component if 2D.
-                    if( 2 == WorleyDim ) cellQ.z = Qi.z;
-
-                    // Euclidean distance measure to Qi.
-                    float distance = length( vector( cellQ-Qi ));
+                    // Euclidean distance measure to iQ.
+                    float distance = length( vector( cellQ-iQ ));
 
                     // Apply Shape exponent.
                     distance = pow( distance, Shape );
@@ -284,29 +266,28 @@ shader pattern_FractalWorley
             }
         } // End Worley loops.
 
-        // Accumulate this iteration's pattern.
+        // Add this iteration's contribution to the result.
         F1 += f1mag * f1;
         F2 += f2mag * f2;
 
         // Update for the next iteration.
-        freqi *= Lacunarity;
+        freq *= Lacunarity;
         f1sum += f1mag;
         f2sum += f2mag;
 
-        // Erosion adjustment.
+        // Erosion magnitude adjustment.
         float  f1erosion = mix( -Erosion, Erosion, F1/f1sum );
         float  f2erosion = mix( -Erosion, Erosion, F2/f2sum );
 
-        // Fractal magnitude of the next iteration.
-        if( FractalType == 0 )
+        if( 1 == FractalType )
         {
-            f1mag = pow( Gain, i+1.0 + 15.0*Gain*f1erosion );
-            f2mag = pow( Gain, i+1.0 + 15.0*Gain*f2erosion );
+            f1mag = pow( Gain, i+1.0 + i*f1erosion );
+            f2mag = pow( Gain, i+1.0 + i*f2erosion );
         }
         else
         {
-            f1mag = 1.0 / pow( freqi, (3.0-2.0*Dimension) + 2.0*f1erosion );
-            f2mag = 1.0 / pow( freqi, (3.0-2.0*Dimension) + 2.0*f2erosion );
+            f1mag = 1.0 / pow( freq, (3.0-2.0*Dimension) + f1erosion );
+            f2mag = 1.0 / pow( freq, (3.0-2.0*Dimension) + f2erosion );
         }
     } // End fractal loop.
 

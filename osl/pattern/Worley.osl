@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -38,8 +38,6 @@ shader pattern_Worley
         string readOnly = "True",
         string help =
             "The <b>Size</b> of the connected <b>Space</b>. "
-            "Along with the pattern's <b>Size</b> parameter, this determines "
-            "the size of the resulting pattern variations this node produces. "
     ]],
 
     float Size = 1.0
@@ -57,6 +55,14 @@ shader pattern_Worley
             "Determines how much to randomize the points. "
     ]],
 
+    int Variation = 0
+    [[
+        string label = "Variation",
+        int slider = 1, int slidermin = 0, int slidermax = 10, int sensitivity = 1,
+        string help =
+            "Changes the resulting pattern. "
+    ]],
+
     int Invert = 0
     [[
         string widget = "checkBox",
@@ -64,19 +70,12 @@ shader pattern_Worley
             "Invert the float output values: 1 &ndash; result. "
     ]],
 
-    float Variation = 0.0
-    [[
-        string label = "Variation",
-        int slider = 1, float slidermin = 0.0, float slidermax = 10.0,
-        string help =
-            "Varies the resulting pattern. Useful for animating the effect. "
-    ]],
-
     output float F1 = 0.0,
     output float F2 = 0.0,
     output float F2minusF1 = 0.0,
     output color Voronoi = color(0.0),
     output point CellPoint = point(0.0),
+    output point CellMap = point(0.0),
     output float OutSize = 1.0
 )
 {
@@ -93,17 +92,17 @@ shader pattern_Worley
 
     // Size scaling.
     float  size = max( 1.0e-6, Size );
-    Q /= size;
     OutSize = SpaceSize * size;
+    Q /= size;
 
     // Divide Q into cells (unit cubes) and randomly place
     // a point within each. Then measure the distance between
     // the shaded point and the random point in each of the
     // 27 cells that either contain it or are neighbors of it.
-    F1 = F2 = 5.0; // Ensure these will be changed.
+    F1 = F2 = 5.0; // Ensure these distances will be changed.
 
     // The shaded point's cell index.
-    point  QIndex = floor( Q );
+    point  cellHome = floor( Q );
 
     for( int i = -1; i <= 1; i++ )
     {
@@ -111,35 +110,35 @@ shader pattern_Worley
         {
             for( int k = -1; k <= 1; k++ )
             {
-                // The cell's index and its random offset.
-                point  cellIndex = QIndex + vector(i,j,k);
+                // The current cell's index.
+                point  cellIndex = cellHome + vector(i,j,k);
+
+                // The current cell’s random offset.
                 vector cellOffset = noise( "cell", cellIndex, Variation );
 
-                // The cell’s jittered point.
-                point cellQ = cellIndex + Jitter*cellOffset;
+                // The current cell's jittered location.
+                point  cellQ = cellIndex + Jitter*cellOffset;
 
-                // Euclidean distance measure to Q.
-                float distance = length( vector( cellQ-Q ));
+                // The current cell's (Euclidean) distance measure to the shaded point.
+                float  dist = length( vector( cellQ-Q ));
 
-                // New F1 or F2?
-                // if distance < F1:
-                float newF1 = step( distance, F1 );
-                // if F1 < distance < F2:
-                float newF2 = mix( step( distance, F2 ), 0.0, newF1 );
+                // New F1 or F2: is there a new shorter distance?
+                int  newF1 = select( 0, 1, dist < F1 );
+                int  newF2 = select( select( 0, 1, dist < F2 ), 0, newF1 );
 
                 // New F1: update both.
-                F2 = mix( F2, F1, newF1 );
-                F1 = mix( F1, distance, newF1 );
+                F2 = select( F2, F1, newF1 );
+                F1 = select( F1, dist, newF1 );
 
                 // New F2: update F2.
-                F2 = mix( F2, distance, newF2 );
+                F2 = select( F2, dist, newF2 );
 
                 // Update Voronoi color.
-                Voronoi = mix( Voronoi, color(cellOffset), newF1 );
+                Voronoi = select( Voronoi, color(cellOffset), newF1 );
 
-                // Update CellPoint location.
-                CellPoint = mix( CellPoint, cellQ, newF1 );
-
+                // Update CellPoint value and CellMap coordinates.
+                CellPoint = select( CellPoint, cellQ, newF1 );
+                CellMap = select( CellMap, cellQ-Q, newF1 );
             }
         }
     } // End loops.
@@ -154,4 +153,9 @@ shader pattern_Worley
         F2 = 1.0 - F2;
         F2minusF1 = 1.0 - F2minusF1;
     }
+
+    // Center the CellMap coordinates and orient X correctly.
+    CellMap += vector( 0.5, 0.5, 0.0 );
+    CellMap.x = 1.0 - CellMap.x;
+    CellMap.z = 0.0;
 }
