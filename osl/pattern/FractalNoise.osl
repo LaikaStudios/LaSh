@@ -87,7 +87,7 @@ shader pattern_FractalNoise
     float Dimension = 1.0
     [[
         string label = "Dimension",
-        int slider = 1, float slidermin = 0.0, float slidermax = 1.5,
+        int slider = 1, float slidermin = 0.5, float slidermax = 1.5,
         string conditionalVisPath = "../FractalType",
         string conditionalVisOp = "equalTo",
         string conditionalVisValue = "0",
@@ -99,7 +99,7 @@ shader pattern_FractalNoise
             "and the <b>Dimension</b> value: <br/>"
             "amplitude = <tt>1/(f^ß)</tt>, where <tt>ß = 3-2*</tt><b>Dimension</b>. "
             "</p>"
-            "The process starts with the largest basis function pattern with <tt>amplitude</tt> = 1. "
+            "The process starts with the largest basis function pattern with amplitude = 1. "
     ]],
 
     float Gain = 0.5
@@ -114,7 +114,7 @@ shader pattern_FractalNoise
             "The amplitude of each iteration is <b>Gain</b><tt>^(i-1)</tt>; where <tt>i</tt> is the "
             "iteration number. "
             "<p>"
-            "The process starts with the largest basis function pattern with <tt>amplitude</tt> = 1. "
+            "The process starts with the largest basis function pattern with amplitude = 1. "
             "Note that a <b>Gain</b> of 0 or 1 produces no change in contribution for "
             "successive iterations, and therefore <b>Erosion</b> effects can't be produced "
             "for the extreme ends of the <b>Gain</b> range. "
@@ -148,7 +148,7 @@ shader pattern_FractalNoise
             "pattern generated before it. "
             "</p>"
             "The process starts with the largest basis function pattern at "
-            "<tt>f</tt> = 1 and <tt>amplitude</tt> = 1. "
+            "f = 1 and amplitude = 1. "
     ]],
 
     float Contrast = 0.0
@@ -341,13 +341,13 @@ shader pattern_FractalNoise
         color  erosion = mix( -Erosion, Erosion, Color/sum );
         if( "uperlin" == NoiseType ) erosion *= 2;
 
-        if( 1 == FractalType )
+        if( 0 == FractalType )
         {
-            mag = pow( Gain - 0.5*erosion, i+1.0 );
+            mag = color(1.0) / pow( freq, color(3.0-2.0*Dimension) + erosion );
         }
         else
         {
-            mag = color(1.0) / pow( freq, (3.0-2.0*Dimension) + erosion );
+            mag = pow( color(Gain) - 0.5*erosion, i );
         }
     }
     // End fractal computation.

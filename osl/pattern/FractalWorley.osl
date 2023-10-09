@@ -77,7 +77,7 @@ shader pattern_FractalWorley
     float Dimension = 1.0
     [[
         string label = "Dimension",
-        int slider = 1, float slidermin = 0.0, float slidermax = 1.5,
+        int slider = 1, float slidermin = 0.5, float slidermax = 1.5,
         string conditionalVisPath = "../FractalType",
         string conditionalVisOp = "equalTo",
         string conditionalVisValue = "0",
@@ -89,7 +89,7 @@ shader pattern_FractalWorley
             "and the <b>Dimension</b> value: <br/>"
             "amplitude = <tt>1/(f^ß)</tt>, where <tt>ß = 3-2*</tt><b>Dimension</b>. "
             "</p>"
-            "The process starts with the largest basis function pattern with <tt>amplitude</tt> = 1. "
+            "The process starts with the largest basis function pattern with amplitude = 1. "
     ]],
 
     float Gain = 0.5
@@ -104,7 +104,7 @@ shader pattern_FractalWorley
             "The amplitude of each iteration is <b>Gain</b><tt>^(i-1)</tt>; where <tt>i</tt> is the "
             "iteration number. "
             "<p>"
-            "The process starts with the largest basis function pattern with <tt>amplitude</tt> = 1. "
+            "The process starts with the largest basis function pattern with amplitude = 1. "
             "Note that a <b>Gain</b> of 0 or 1 produces no change in contribution for "
             "successive iterations, and therefore <b>Erosion</b> effects can't be produced "
             "for the extreme ends of the <b>Gain</b> range. "
@@ -123,7 +123,7 @@ shader pattern_FractalWorley
             "<tt>f(i+1) = f(i)*</tt><b>Lacunarity</b>, where <tt>f</tt> is frequency "
             "and <tt>i</tt> is iteration number. "
             "</p>"
-            "The process starts with the largest basis function pattern at <tt>f</tt> = 1. "
+            "The process starts with the largest basis function pattern at f = 1. "
     ]],
 
     int Iterations = 5
@@ -138,7 +138,7 @@ shader pattern_FractalWorley
             "pattern generated before it. "
             "</p>"
             "The process starts with the largest basis function pattern at "
-            "<tt>f</tt> = 1 and <tt>amplitude</tt> = 1. "
+            "f = 1 and amplitude = 1. "
     ]],
 
     float Erosion = 0.0
@@ -279,15 +279,15 @@ shader pattern_FractalWorley
         float  f1erosion = mix( -Erosion, Erosion, F1/f1sum );
         float  f2erosion = mix( -Erosion, Erosion, F2/f2sum );
 
-        if( 1 == FractalType )
-        {
-            f1mag = pow( Gain - 0.5*f1erosion, i+1.0 );
-            f2mag = pow( Gain - 0.5*f2erosion, i+1.0 );
-        }
-        else
+        if( 0 == FractalType )
         {
             f1mag = 1.0 / pow( freq, (3.0-2.0*Dimension) + f1erosion );
             f2mag = 1.0 / pow( freq, (3.0-2.0*Dimension) + f2erosion );
+        }
+        else
+        {
+            f1mag = pow( Gain - 0.5*f1erosion, i );
+            f2mag = pow( Gain - 0.5*f2erosion, i );
         }
     } // End fractal loop.
 
