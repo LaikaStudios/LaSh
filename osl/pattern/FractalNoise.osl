@@ -343,7 +343,7 @@ shader pattern_FractalNoise
 
         if( 1 == FractalType )
         {
-            mag = pow( Gain, i+1.0 + i*erosion );
+            mag = pow( Gain - 0.5*erosion, i+1.0 );
         }
         else
         {

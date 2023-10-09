@@ -281,8 +281,8 @@ shader pattern_FractalWorley
 
         if( 1 == FractalType )
         {
-            f1mag = pow( Gain, i+1.0 + i*f1erosion );
-            f2mag = pow( Gain, i+1.0 + i*f2erosion );
+            f1mag = pow( Gain - 0.5*f1erosion, i+1.0 );
+            f2mag = pow( Gain - 0.5*f2erosion, i+1.0 );
         }
         else
         {
