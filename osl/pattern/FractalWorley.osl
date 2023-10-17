@@ -16,8 +16,12 @@ shader pattern_FractalWorley
     [[
         int connectable = 0,
         string help =
-            "Produces various Worley/Voronoi patterns. "
-            "These are all based on the distances between jittered cellular points. "
+            "Produces "
+            "<a href='https://en.wikipedia.org/wiki/Fractional_Brownian_motion'>"
+            "fractional Brownian motion</a> "
+            "or a "
+            "<a href='https://en.wikipedia.org/wiki/Fractal'> fractal</a> pattern "
+            "using Worley/Voronoi patterns. "
     ]],
 
     point Space = point(0.0)
@@ -82,14 +86,16 @@ shader pattern_FractalWorley
         string conditionalVisOp = "equalTo",
         string conditionalVisValue = "0",
         string help =
-            "The result is a combination of <b>Iterations</b> number of basis function patterns. "
+            "The result is a combination of <b>Iterations</b> number of patterns. "
             "<p>"
             "The amplitude of each successive iteration in the <i>Fractal</i> generation "
-            "process is determined by the frequency (<tt>f</tt>) of the basis function pattern "
-            "and the <b>Dimension</b> value: <br/>"
-            "amplitude = <tt>1/(f^ß)</tt>, where <tt>ß = 3-2*</tt><b>Dimension</b>. "
+            "process is determined by the frequency (<tt>f</tt>) of the pattern "
+            "and the <b>Dimension</b> value: "
             "</p>"
-            "The process starts with the largest basis function pattern with amplitude = 1. "
+            "amplitude = <tt>1/(f^ß)</tt>, where <tt>ß = 3-2*</tt><b>Dimension</b>. "
+            "<p>"
+            "The process starts with the largest pattern with amplitude = 1. "
+            "</p>"
     ]],
 
     float Gain = 0.5
@@ -104,46 +110,43 @@ shader pattern_FractalWorley
             "The amplitude of each iteration is <b>Gain</b><tt>^(i-1)</tt>; where <tt>i</tt> is the "
             "iteration number. "
             "<p>"
-            "The process starts with the largest basis function pattern with amplitude = 1. "
-            "Note that a <b>Gain</b> of 0 or 1 produces no change in contribution for "
-            "successive iterations, and therefore <b>Erosion</b> effects can't be produced "
-            "for the extreme ends of the <b>Gain</b> range. "
+            "The process starts with the largest pattern with amplitude = 1. "
             "</p>"
     ]],
 
     float Lacunarity = 2.0
     [[
         int connectable = 0,
-        int slider = 1, float slidermin = 1.0, float slidermax = 5.0,
+        int slider = 1, float slidermin = 1.0, float slidermax = 4.0,
         string help =
-            "The result is a combination of <b>Iterations</b> number of basis function patterns. "
+            "The result is a combination of <b>Iterations</b> number of patterns. "
             "<p>"
-            "The frequency of each successive basis function pattern in the generation "
+            "The frequency of each successive pattern in the generation "
             "process is scaled up from the previous frequency by the <b>Lacunarity</b> value: "
             "<tt>f(i+1) = f(i)*</tt><b>Lacunarity</b>, where <tt>f</tt> is frequency "
             "and <tt>i</tt> is iteration number. "
             "</p>"
-            "The process starts with the largest basis function pattern at f = 1. "
+            "The process starts with the largest pattern at f = 1. "
     ]],
 
     int Iterations = 5
     [[
         int connectable = 0,
-        int slider = 1, float slidermin = 1, float slidermax = 10, float sensitivity = 1,
+        int slider = 1, float slidermin = 1, float slidermax = 8, float sensitivity = 1,
         string help =
-            "The result is a combination of <b>Iterations</b> number of basis function patterns. "
+            "The result is a combination of <b>Iterations</b> number of patterns. "
             "<p>"
-            "Each successive basis function pattern in the generation process is "
-            "<b>Lacunarity</b> times the frequency of the basis function "
+            "Each successive pattern in the generation process is "
+            "<b>Lacunarity</b> times the frequency of the "
             "pattern generated before it. "
             "</p>"
-            "The process starts with the largest basis function pattern at "
+            "The process starts with the largest pattern at "
             "f = 1 and amplitude = 1. "
     ]],
 
     float Erosion = 0.0
     [[
-        int slider = 1, float slidermin = -2.0, float slidermax = 2.0,
+        int slider = 1, float slidermin = -1.5, float slidermax = 1.5,
         string help =
             "<b>Erosion</b> determines the so-called \"crossover scale\" of the result. "
             "<p>"
@@ -199,7 +202,7 @@ shader pattern_FractalWorley
     OutSize = SpaceSize * size;
     Q /= size;
 
-    // Initialize the fractal iteration variables.
+    // Initialize the iteration variables.
     float  freq = 1.0;
     float  f1 = 0.0;
     float  f2 = 0.0;
@@ -239,23 +242,23 @@ shader pattern_FractalWorley
                     point cellQ = cellIndex + Jitter*cellOffset;
 
                     // Euclidean distance measure to iQ.
-                    float distance = length( vector( cellQ-iQ ));
+                    float dist = length( vector( cellQ-iQ ));
 
                     // Apply Shape exponent.
-                    distance = pow( distance, Shape );
+                    dist = pow( dist, Shape );
 
                     // New F1 or F2?
-                    // if distance < F1:
-                    int newF1 = int( step( distance, f1 ));
-                    // if F1 < distance < F2:
-                    int newF2 = int( select( step( distance, f2 ), 0, newF1 ));
+                    // if dist < F1:
+                    int newF1 = int( step( dist, f1 ));
+                    // if F1 < dist < F2:
+                    int newF2 = int( select( step( dist, f2 ), 0, newF1 ));
 
                     // New F1: update both.
                     f2 = select( f2, f1, newF1 );
-                    f1 = select( f1, distance, newF1 );
+                    f1 = select( f1, dist, newF1 );
 
                     // New F2: update F2.
-                    f2 = select( f2, distance, newF2 );
+                    f2 = select( f2, dist, newF2 );
 
                     // Update Voronoi color.
                     Voronoi = select( Voronoi, color(cellOffset), newF1 );
@@ -276,18 +279,30 @@ shader pattern_FractalWorley
         f2sum += f2mag;
 
         // Erosion magnitude adjustment.
-        float  f1erosion = mix( -Erosion, Erosion, F1/f1sum );
-        float  f2erosion = mix( -Erosion, Erosion, F2/f2sum );
+        float  f1erosion = mix( Erosion, -Erosion, F1/f1sum );
+        float  f2erosion = mix( Erosion, -Erosion, F2/f2sum );
+    
+        // color  erosion = mix( color(Erosion), -color(Erosion), Color/sum );
 
         if( 0 == FractalType )
         {
-            f1mag = 1.0 / pow( freq, (3.0-2.0*Dimension) + f1erosion );
-            f2mag = 1.0 / pow( freq, (3.0-2.0*Dimension) + f2erosion );
+            float f1dim = Dimension + f1erosion;
+            float f2dim = Dimension + f2erosion;
+            f1dim = clamp( f1dim, 0.0, 2.0 );
+            f2dim = clamp( f2dim, 0.0, 2.0 );
+
+            f1mag = 1.0 / pow( freq, 3.0 - 2.0*f1dim );
+            f2mag = 1.0 / pow( freq, 3.0 - 2.0*f2dim );
         }
         else
         {
-            f1mag = pow( Gain - 0.5*f1erosion, i );
-            f2mag = pow( Gain - 0.5*f2erosion, i );
+            float f1gain = Gain + f1erosion;
+            float f2gain = Gain + f2erosion;
+            f1gain = clamp( f1gain, 0.01, 0.99 );
+            f2gain = clamp( f2gain, 0.01, 0.99 );
+
+            f1mag = pow( f1gain, i );
+            f2mag = pow( f2gain, i );
         }
     } // End fractal loop.
 
