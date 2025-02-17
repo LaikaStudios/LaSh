@@ -85,6 +85,9 @@ This scene can be used to generate the images in **Figure 6** of the paper.
 Two opaque Materials are layered (small green bumps over large blue bumps), and the resulting *Bulk* value is shown in grey-scale.
 
 ![Thickness and Accumulation](media/SizeTA.png)
+
+**Accumulation:** 0 to 1, bottom to top. **Thickness:** 0 to 1, left to right.
+
 ![ThickAndAccum](media/ThickAndAccum.png)
 
 [Top](#Top)
@@ -96,6 +99,9 @@ The [`katana/project/Tau.katana`](../katana/project) file can be used to explore
 Transparent cherry syrup is layered over a blue waffle, showing the effects of Thickness, Accumulation, and Tau Scale on the resuling optical thickness (*Tau*) of the layered result.
 
 ![Thickness and Accumulation](media/TauTA.png)
+
+**Accumulation:** 0 to 1, bottom to top. **Thickness:** 0 to 1, left to right.
+
 ![ThickAndAccum](media/Tau.png)
 
 [Top](#Top)
@@ -200,6 +206,8 @@ In order to support this possibility, this implementation has been updated to in
 *Nd* contains the Material's displaced surface normal so that an overlying Material's displacement can make use of it.
 
 ![DispCascade](media/DispCascade.png)
+
+Left to right: Below displacement, Above displacement, without Cascading, with Cascading.
 
 ### Daisy Chained Materials
 
