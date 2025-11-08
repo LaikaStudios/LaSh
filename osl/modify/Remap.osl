@@ -1,0 +1,78 @@
+/*
+ *  Copyright 2024 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader modify_Remap
+[[
+    int rfm_nodeid = 1234333,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Linearly remap the range of input values into new output values: "
+            "<p>"
+            "The in A value will become the out A value. "
+            "<br/>"
+            "The in B value will become the out B value. "
+            "</p>"
+    ]],
+
+    float in = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "The input pattern. "
+    ]],
+
+    color In = color(0.5)
+    [[
+        string help =
+            "The input pattern. "
+    ]],
+
+    float inA = 0.0
+    [[
+        string label = "in A",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help = 
+            "This input value is mapped to the out A value. "
+    ]],
+
+    float inB = 1.0
+    [[
+        string label = "in B",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help = 
+            "This input value is mapped to the out B value. "
+    ]],
+
+    float outA = 0.0
+    [[
+        string label = "out A",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help = 
+            "The in A value becomes this value. "
+    ]],
+
+    float outB = 1.0
+    [[
+        string label = "out B",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help = 
+            "The in B value becomes this value. "
+    ]],
+
+    output float out = 0.0,
+    output color Out = color( 0.0 )
+)
+{
+    out = mix( outA, outB, (in-inA)/(inB-inA) );
+    Out = mix( color(outA), color(outB), (In-color(inA))/(color(inB)-color(inA)) );
+}

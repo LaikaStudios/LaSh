@@ -1,0 +1,59 @@
+/*
+ *  Copyright 2024 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader displace_BumpDispMix
+[[
+    int rfm_nodeid = 1234362,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Controls the mixture between a bumped shading normal and a displacement. "
+            "This node specifically produces the correct mixture of each in the outputs. "
+    ]],
+
+    normal Normal = N
+    [[
+        string label = "Normal",
+        string help =
+            "The bumped shading Normal that corresponds to the <b>DeltaP</b> displacement. "
+    ]],
+
+    vector SurfaceGradient = vector(0.0)
+    [[
+        string label = "Surface Gradient",
+        string help =
+            "The bumped shading Surface Gradient vector that corresponds to the <b>DeltaP</b> displacement. "
+    ]],
+
+    vector DeltaP = vector(0.0)
+    [[
+        string help =
+            "The DeltaP displacement vector. "
+    ]],
+
+    float BumpDispMix = 1.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Controls the mixture between the bumped shading <b>Normal</b> and/or "
+            "<b>Surface Gradient</b> (0) and the <b>DeltaP</b> displacement (1). "
+    ]],
+
+    output normal outNormal = normal(0.0),
+    output vector outSurfaceGradient = vector(0.0),
+    output vector outDeltaP = vector(0.0)
+)
+{
+    outNormal = normalize( mix( Normal, N, BumpDispMix) );
+    outSurfaceGradient = mix( SurfaceGradient, vector(0.0), BumpDispMix );
+    outDeltaP = mix( vector(0.0), DeltaP, BumpDispMix );
+}

@@ -1,0 +1,88 @@
+/*
+ *  Copyright 2025 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader LaB_AddMask
+[[
+    int rfm_nodeid = 0000000,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Add the Bxdf Masks of the A and B LaSh Materials "
+            "based on their desired Weights. "
+    ]],
+
+    float WeightA = 0.5
+    [[
+        string label = "Weight A",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Weight of the A LaSh Material. "
+    ]],
+
+    float WeightB = 0.5
+    [[
+        string label = "Weight B",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Weight of the B LaSh Material. "
+    ]],
+
+    int NormalizeWeights = 0
+    [[
+        string label = "Normalize Weights",
+        string widget = "checkBox",
+        string help =
+            "Normalize the A and B Weights so they sum to 1. "
+            "When On (1), the result is equivalent to that produced by "
+            "a LaSh_Mix node. "
+    ]],
+
+    float A = 1.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "The A LaSh Material's Bxdf (LaB) Mask. "
+    ]],
+
+    float B = 1.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "The B LaSh Material's Bxdf (LaB) Mask. "
+    ]],
+
+    output float outWeightA = 1.0,
+    output float outWeightB = 1.0,
+
+    output float Mask = 1.0
+)
+{
+    float weighted_add( float A, float WeightA, float B, float WeightB )
+    {
+        return clamp( A*WeightA + B*WeightB, 0.0, 1.0 );
+    }
+
+    outWeightA = WeightA;
+    outWeightB = WeightB;
+
+    if( 1 == NormalizeWeights )
+    {
+        float total = outWeightA + outWeightB;
+        if( total > 0.0001 )
+        {
+            outWeightA /= total;
+            outWeightB /= total;
+        }
+    }
+
+    Mask = weighted_add( A, outWeightA, B, outWeightB );
+}

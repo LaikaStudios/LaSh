@@ -1,0 +1,147 @@
+/*
+ *  Copyright 2024 Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+
+//----------------------------------------------------------------------
+// Produces a linear spline with parabolic shaped ends.
+// The end widths are controlled by a: 0 ≤ a ≤ 0.5.
+// Slope is zero at t=0 and t=1.
+//----------------------------------------------------------------------
+float linear_to_smooth( float a, float t )
+{
+    if( t <= 0 ) return 0;
+    if( 1 <= t ) return 1;
+
+    float  s = 2-a-a;
+
+    // Parabolic portions.
+    if( t < a ) return t*t / (a*s); // 0 < t < a
+    if( 1-a < t ) return 1 - (1-t)*(1-t)/(a*s); // 1-a < t < 1
+
+    // Linear portion.
+    return (2*t-a) / s; // a ≤ t ≤ 1-a
+}
+
+//----------------------------------------------------------------------
+// Produces a linear spline with parabolic shaped ends.
+// The end widths are controlled by a: 0 ≤ a ≤ 0.5.
+// Slope is infinite at t=0 and t=1.
+//----------------------------------------------------------------------
+float linear_to_inv_smooth ( float a, float t )
+{
+    if( t <= 0 ) return 0;
+    if( 1 <= t ) return 1;
+
+    // Parabolic portions.
+    if( t < a ) return M_SQRT2 * sqrt(-(a-1)*a*t); // 0 < t < a
+    if( 1-a < t ) return 1 - M_SQRT2 * sqrt(-(a-1)*a*(1-t)); // 1-a < t < 1
+
+    // Linear portion.
+    return a*(0.5 - t) + t; // a ≤ t ≤ 1-a
+}
+
+//----------------------------------------------------------------------
+// Expand the distribution of x values away from 0.5 and toward 0 and 1.
+//----------------------------------------------------------------------
+float expand
+(
+    float x, // [0,1] value to expand.
+    float amount // [0,1] amount of expansion.
+)
+{
+    // Linear to smooth transition.
+    float  a = clamp( 2*amount, 0, 0.5 );
+
+    // Expand the x range to produce the smooth to step progression.
+    float  t = (x-0.5) / (1 - clamp((amount-0.25)/0.75, 0, 0.9999)) + 0.5;
+
+    return linear_to_smooth( a, t );
+}
+color expand( color x, float amount )
+{
+    return color( expand( x.r, amount ), expand( x.g, amount ), expand( x.b, amount ) );
+}
+
+//----------------------------------------------------------------------
+// Compress the distribution of x values toward 0.5.
+//----------------------------------------------------------------------
+float compress
+(
+    float x, // [0,1] value to compress.
+    float amount // [0,1] amount of compression.
+)
+{
+    // Linear to smooth transition.
+    float  a = clamp( 2*amount, 0, 0.5 );
+
+    float  curve = linear_to_inv_smooth( a, x );
+
+    // Compress the curve range to produce the smooth to uniform progression.
+    return  mix( curve, 0.5, clamp( (amount-0.25)/0.75, 0, 1 ));
+}
+color compress( color x, float amount )
+{
+    return color( compress( x.r, amount ), compress( x.g, amount ), compress( x.b, amount ) );
+}
+
+
+shader modify_Compand
+[[
+    int rfm_nodeid = 1306992,
+    string rfm_classification = "rendernode/RenderMan/pattern/OSLBook"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Nonlinearly compress or expand the distribution of input values. "
+            "Compand is a contraction of \"compress\" and \"expand\". "
+    ]],
+
+    float in = 0.5
+    [[
+        string help =
+            "The input pattern. "
+    ]],
+
+    color In = color(0.5)
+    [[
+        string help =
+            "The input pattern. "
+    ]],
+
+    float Compand = 0.0
+    [[
+        int slider = 1, float slidermin = -1.0, float slidermax = 1.0,
+        string help = 
+            "Values < 0 will compress the distribution of input values toward 0.5. "
+            "<br/>"
+            "Values > 0 will expand the distribution of input values away from 0.5. "
+    ]],
+
+    output float out = 0.0,
+    output color Out = color( 0.0 )
+)
+{
+    if( 0.0001 < Compand )
+    {
+        out = expand( in, Compand );
+        Out = expand( In, Compand );
+    }
+    else if ( Compand < -0.0001 )
+    {
+        out = compress( in, -Compand );
+        Out = compress( In, -Compand );
+    }
+    else
+    {
+        out = in;
+        Out = In;
+    }
+}

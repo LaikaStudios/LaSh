@@ -1,0 +1,146 @@
+/*
+ *  Copyright 2024 Mitch J Prater. Modified for use at LAIKA.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader combine_Wipe
+[[
+    int rfm_nodeid = 1234360,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Creates a patterned transition (a.k.a. a wipe) between two inputs. "
+    ]],
+
+    float A_in = 0.0
+    [[
+        string page = "A",
+        string label = "in",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "An input pattern. "
+    ]],
+
+    color A_In = color(0.0)
+    [[
+        string page = "A",
+        string label = "In",
+        string help =
+            "An input pattern. "
+    ]],
+
+    float A_Size = 1.0
+    [[
+        string page = "A",
+        string label = "Size",
+        string help =
+            "The pattern Size of the A input. "
+    ]],
+
+    float B_in = 1.0
+    [[
+        string page = "B",
+        string label = "in",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "An input pattern. "
+    ]],
+
+    color B_In = color(1.0)
+    [[
+        string page = "B",
+        string label = "In",
+        string help =
+            "An input pattern. "
+    ]],
+
+    float B_Size = 1.0
+    [[
+        string page = "B",
+        string label = "Size",
+        string help =
+            "The pattern Size of the B input. "
+    ]],
+
+    float Pattern = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help = 
+            "A 0 to 1 ranged pattern. This determines the appearance "
+            "of the transition from <b>A</b> to <b>B</b>. "
+            "<p>"
+            "Note that this must contain a range of values from "
+            "0 to 1. Strictly binary patterns containing only 0 "
+            "or 1 will not work. "
+            "</p>"
+    ]],
+    float PatternSize = 1.0
+    [[
+        string label = "Pattern Size",
+        string readOnly = "True",
+        string help =
+            "The Size of the <b>Pattern</b>. "
+    ]],
+
+    float Ramp = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help = 
+            "A smoothly ranging 0 to 1 (or larger) ranged value. "
+            "This determines the area over which the transition will occur. "
+            "<p>"
+            "Specifically, the <b>Ramp</b> value determines at what "
+            "<b>Pattern</b> value the <b>A</b> to <b>B</b> transition occurs. "
+            "<b>Ramp</b> values lower than the <b>Pattern</b> will output <b>A</b> and "
+            "<b>Ramp</b> values higher than the <b>Pattern</b> will output <b>B</b>. "
+            "</p>"
+    ]],
+
+    float Center = 0.0
+    [[
+        int slider = 1, float slidermin = -0.5, float slidermax = 0.5,
+        string help = 
+            "Shifts the center of the transition region up or down the <b>Ramp</b>. "
+    ]],
+
+    float Width = 1.0
+    [[
+        int slider = 1, float slidermin = 0.25, float slidermax = 2.0,
+        string help = 
+            "Scales the width of the patterned transition region. "
+    ]],
+
+    float Blur = 0.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help = 
+            "The width of the actual transition: "
+            "blurs the transition from <b>A</b> to <b>B</b>. "
+    ]],
+
+    output float wipe = 0.0,
+    output float out = 0.0,
+    output color Out = color(0.0),
+    output float OutSize = 0.0
+)
+{
+    float  ramp = (1+Blur)*(Ramp-Center-0.5)/Width + 0.5;
+    float  halfBlur = 0.5*Blur;
+
+    wipe = 1 - smoothstep( ramp-halfBlur, ramp+halfBlur, 1-Pattern );
+
+    out = mix( A_in, B_in, wipe );
+    Out = mix( A_In, B_In, wipe );
+
+    float  A_size = select( PatternSize, A_Size, isconnected(A_Size) );
+    float  B_size = select( PatternSize, B_Size, isconnected(B_Size) );
+
+    OutSize = mix( A_size, B_size, wipe );
+}

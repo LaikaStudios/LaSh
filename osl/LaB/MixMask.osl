@@ -1,0 +1,50 @@
+/*
+ *  Copyright 2025 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader LaB_MixMask
+[[
+    int rfm_nodeid = 0000000,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Mix the Bxdf Masks of the A and B LaSh Materials. "
+    ]],
+
+    float Mix = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Controls the linear blend between the A (0) and B (1) LaSh Materials. "
+    ]],
+
+    float A = 1.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "The A LaSh Material's Bxdf (LaB) Mask. "
+    ]],
+
+    float B = 1.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "The B LaSh Material's Bxdf (LaB) Mask. "
+    ]],
+
+    output float  outMix = 1.0,
+    output float  Mask = 1.0
+)
+{
+    outMix = Mix;
+
+    Mask = A*(1-Mix) + B*Mix;
+}

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -17,7 +17,7 @@ shader data_PrimVar
         int connectable = 0,
         string help =
             "Returns the specified "
-            "<a href='https://rmanwiki.pixar.com/display/REN25/Primitive+Variables'>Primitive Variable</a>. "
+            "<a href='https://rmanwiki.pixar.com/display/REN/Primitive+Variables'>Primitive Variable</a>. "
             "<p>"
             "Supports <i>int</i>, <i>float</i>(double), "
             "<i>color</i>, <i>point</i>, <i>normal</i>, <i>vector</i>, "
@@ -31,7 +31,7 @@ shader data_PrimVar
         int connectable = 0,
         string help =
             "The <b>Name</b> of the desired "
-            "<a href='https://rmanwiki.pixar.com/display/REN25/Primitive+Variables'>Primitive Variable</a>. "
+            "<a href='https://rmanwiki.pixar.com/display/REN/Primitive+Variables'>Primitive Variable</a>. "
     ]],
 
     int Type = 0

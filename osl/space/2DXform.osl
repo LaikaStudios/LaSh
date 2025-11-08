@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch J Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -32,6 +32,17 @@ shader space_2DXform
         string readOnly = "True",
         string help =
             "The <b>Size</b> of the connected <b>In</b> point's variations. "
+    ]],
+
+    int TransformCenter = 1
+    [[
+        int connectable = 0,
+        string label = "Transform Center",
+        string widget = "mapper",
+        string options = "(0,0):0|(0.5,0.5):1",
+        string help =
+            "Do transformations occur about the origin <i>(0,0)</i> "
+            "or about a texture's center <i>(0.5,0.5)</i> ? "
     ]],
 
     float Size = 1.0
@@ -147,9 +158,8 @@ shader space_2DXform
     float  ySize = max( 1.0e-6, size * YSize );
     float  rotation = radians( Rotation );
 
-    // Size.
-    Out /= point( xSize, ySize, 1.0 );
-    OutSize = sqrt( xSize*ySize ) * InSize;
+    // Transform Center.
+    if( TransformCenter ) Out -= vector( 0.5, 0.5, 0.0 );
 
     // Rotate.
     float  sine, cosine;
@@ -160,6 +170,13 @@ shader space_2DXform
             Out.y*cosine - Out.x*sine,
             Out.z
             );
+
+    // Size.
+    Out /= point( xSize, ySize, 1.0 );
+    OutSize = sqrt( xSize*ySize ) * InSize;
+
+    // Transform Center.
+    if( TransformCenter ) Out += vector( 0.5, 0.5, 0.0 );
 
     // Offset.
     Out -= point( XOffset, YOffset, 0.0 );

@@ -1,5 +1,5 @@
 #
-#   Copyright 2022-2023 Laika, LLC. Authored by Mitch Prater.
+#   Copyright 2022 LAIKA. Authored by Mitch J Prater.
 # 
 #   Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
 #   or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -31,7 +31,7 @@ RMANTREE ?= $(PIXAR_ROOT)/RenderManProServer-$(RMAN_VERSION)
 # SUBDIRS and EXCLUDE control variables determine which .osl files are made.
 #
 # These directories will be searched for .osl files.
-SUBDIRS := convert data displace dot LaD osl pattern space texture trace util
+SUBDIRS := combine convert data displace dot LaB LaD modify osl pattern space texture trace
 
 # These shaders won't be built: directory/basename
 EXCLUDE := 
@@ -96,11 +96,6 @@ LaD/ToParts.oso : include/LaD.h
 LaD/Layer.oso : include/LaD.h
 LaD/Mix.oso : include/LaD.h
 LaD/Select.oso : include/LaD.h
-
-util/Add.osl : util/UI.h
-util/Mix.osl : util/UI.h
-util/Mul.osl : util/UI.h
-util/Sub.osl : util/UI.h
 
 %.oso : %.osl
 	$(CC) $(CFLAGS) $(INCLUDE) -o $@ $<

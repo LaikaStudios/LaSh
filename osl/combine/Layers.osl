@@ -1,0 +1,201 @@
+/*
+ *  Copyright 2024 Mitch J Prater. Modified for use at LAIKA.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+
+#define LAYER_PARAMS(L) \
+    float L##_in = 0.0 \
+    [[ \
+        string page = #L, \
+        string label = "in", \
+        string readOnly = "True", \
+        string help = \
+            "A float input value. " \
+    ]], \
+\
+    color L##_In = color(0.0) \
+    [[ \
+        string page = #L, \
+        string label = "In", \
+        string readOnly = "True", \
+        string help = \
+            "A tuple input value: color, point, vector, normal. " \
+    ]], \
+\
+    float L##_Size = 1.0 \
+    [[ \
+        string page = #L, \
+        string label = "Size", \
+        string readOnly = "True", \
+        string help = \
+            "The Size of the " #L " input's variations. " \
+    ]], \
+\
+    int L##_Mode = 0 \
+    [[ \
+        int connectable = 0, \
+        string page = #L, \
+        string label = "Mode", \
+        string widget = "mapper", \
+        string options = "Add:0|Subtract:1|Multiply:2|Divide:3|Min:4|Max:5|Mix:6|Mod:7|Step:8", \
+        string help = \
+            "The layering blend mode used to combine this input " \
+            "with the accumulated result of the lower layers. " \
+    ]], \
+\
+    float L##_Mask = 1.0 \
+    [[ \
+        string page = #L, \
+        string label = "Mask", \
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0, \
+        string help = \
+            "Determines how much this input is combined with the others, " \
+            "or controls the <i>Mix</i> mode between this input and the others. " \
+    ]]
+
+#define LAYER(L,result,Result,SIZE,SUM) \
+    if( isconnected( L##_in ) || isconnected( L##_In )) \
+    { \
+        SUM += L##_Mask; \
+        SIZE += L##_Size; \
+    } \
+    if( isconnected( L##_in )) \
+    { \
+        result = layer( L##_Mode, L##_Mask, L##_in, result ); \
+    } \
+    if( isconnected( L##_In )) \
+    { \
+        Result = layer( L##_Mode, L##_Mask, L##_In, Result ); \
+    }
+
+
+// The layer functionality.
+float layer
+(
+    int    Mode,
+    float  Mask,
+    float  in,
+    float  out
+)
+{
+    float  blend = 0.5;
+
+    if( 0 == Mode ) // Add
+    {
+        blend = out + in;
+    }
+    else if( 1 == Mode ) // Subtract
+    {
+        blend = out - in;
+    }
+    else if( 2 == Mode ) // Multiply
+    {
+        blend = out * in;
+    }
+    else if( 3 == Mode ) // Divide
+    {
+        blend = out / in;
+    }
+    else if( 4 == Mode ) // Min
+    {
+        blend = min( out, in );
+    }
+    else if( 5 == Mode ) // Max
+    {
+        blend = max( out, in );
+    }
+    else if( 6 == Mode ) // Mix
+    {
+        blend = in;
+    }
+    else if( 7 == Mode ) // Mod
+    {
+        blend = mod( out, in );
+    }
+    else if( 8 == Mode ) // Step
+    {
+        blend = step( in, out );
+    }
+
+    return mix( out, blend, Mask );
+}
+
+color layer
+(
+    int    Mode,
+    float  Mask,
+    color  in,
+    color  out
+)
+{
+    return color(
+            layer( Mode, Mask, in.r, out.r ),
+            layer( Mode, Mask, in.g, out.g ),
+            layer( Mode, Mask, in.b, out.b )
+            );
+}
+
+
+shader combine_Layers
+[[
+    int rfm_nodeid = 1306965,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Layer the inputs, from the bottom (A) up, using the "
+            "specified blend <b>Mode</b> and <b>Mask</b> for each. "
+    ]],
+
+    int  NormalizeMasks = 0
+    [[
+        int connectable = 0,
+        string label = "Normalize Masks",
+        string widget = "checkBox",
+        string help =
+            "When <i>On</i>, the result will be divided by the sum of "
+            "the connected inputs' <b>Mask</b> values. "
+            "<p>"
+            "Using <b>Mode</b> <i>Add</i> for all such inputs, "
+            "the result will be their proportional weighted average, "
+            "thus turing this into a \"Mixer\" node. "
+            "</p>"
+    ]],
+
+
+    LAYER_PARAMS(E),
+    LAYER_PARAMS(D),
+    LAYER_PARAMS(C),
+    LAYER_PARAMS(B),
+    LAYER_PARAMS(A),
+
+    output float out = 0.0,
+    output color Out = color(0.0),
+    output float OutSize = 0.0
+)
+{
+    float  Sum = 0.0;
+
+    LAYER(A,out,Out,OutSize,Sum);
+    LAYER(B,out,Out,OutSize,Sum);
+    LAYER(C,out,Out,OutSize,Sum);
+    LAYER(D,out,Out,OutSize,Sum);
+    LAYER(E,out,Out,OutSize,Sum);
+
+    float  sum = select( 1.0, Sum, 1.0e-6 < Sum );
+
+    OutSize /= sum;
+
+    if( NormalizeMasks )
+    {
+        out /= sum;
+        Out /= sum;
+    }
+}

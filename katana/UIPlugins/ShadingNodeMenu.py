@@ -15,30 +15,36 @@ from Katana import UI4, NodegraphAPI, LayeredMenuAPI, RenderingAPI, DrawingModul
 from RenderingAPI import RenderPlugins
 from PyUtilModule.UserNodes import _RegisteredCustomNodeTypes
 
-# A list of shader file names that are available, but that are legacy'd or otherwise
-# not good to use, so they are removed from from the popup list of shading nodes.
-# This can be used to remove an outdated or buggy shader from the 'Alt+P' list,
-# so new instances of it are no longer created even though it is still built
-# and functional in existing scenes.
+# Don't show these shading nodes.
 excludeList = []
 
-# Contains a dictionary of shader names, and their custom display name:
-#   'shaderName' : 'displayName'
-# where 'shaderName' is the name of the built shader file (sans extension),
-# and display name is the name that is displayed in the 'Atl+P' menu.
-customDict = {}
+excludeCategory = [
+    'LaB',
+    'LaD'
+]
+
+# Add these specific nodes to the primary alt+p shader list.
+primaryNodes = [
+    'PrmanShadingNode',
+    'PxrDisplace'
+]
 
 # Node color dictionary.
 # Sets the node color per shader category.
 colorDict = {
+    'Prman'         :[ 0.7, 0.56, 0.0 ],
     'Pxr'           :[ 0.650, 0.250, 0.250 ],
     'Lama'          :[ 0.200, 0.427, 0.714 ],
     'bxdf'          :[ 0.200, 0.427, 0.714 ],
     'color'         :[ 0.086, 0.478, 0.259 ],
-    'convert'       :[ 0.478, 0.412, 0.090 ],
-    'data'          :[ 0.420, 0.427, 0.255 ],
+    'combine'       :[ 0.599, 0.469, 0.105 ],
+    'convert'       :[ 0.478, 0.352, 0.090 ],
+    'data'          :[ 0.255, 0.379, 0.427 ],
     'displace'      :[ 0.455, 0.373, 0.675 ],
+    'LaB'           :[ 0.157, 0.460, 0.610 ],
     'LaD'           :[ 0.525, 0.365, 0.502 ],
+    'LaSh'          :[ 0.675, 0.278, 0.428 ],
+    'modify'        :[ 0.246, 0.380, 0.352 ],
     'mutable'       :[ 0.647, 0.325, 0.000 ],
     'osl'           :[ 0.000, 0.000, 0.000 ],
     'pattern'       :[ 0.000, 0.467, 0.510 ],
@@ -46,7 +52,6 @@ colorDict = {
     'string'        :[ 0.605, 0.540, 0.133 ],
     'texture'       :[ 0.667, 0.298, 0.278 ],
     'trace'         :[ 0.000, 0.455, 0.608 ],
-    'util'          :[ 0.306, 0.306, 0.306 ],
     'vector'        :[ 0.604, 0.310, 0.569 ],
 
     'dot_I'         :[ 0.184, 0.486, 0.482 ],
@@ -68,89 +73,83 @@ def find_color( shader_name ):
                 return colorDict.get( category )
         return None
 
-
-def populateCallback( layeredMenu ):
-    """
-    Callback for the layered menu, which adds entries to the given
-    C{layeredMenu} based on the available shading nodes.
-
-    @type layeredMenu: L{LayeredMenuAPI.LayeredMenu}
-    @param layeredMenu: The layered menu to add entries to.
-    """
-    # Obtain a list of names of available PRMan shaders from the PRMan renderer info plug-in.
-    rendererInfoPlugin = RenderPlugins.GetInfoPlugin( 'prman' )
+# Obtain the list of all available shaders.
+def get_prman_shaders():
+    rendererInfoPlugin = RenderPlugins.GetInfoPlugin('prman')
     shaderType = RenderingAPI.RendererInfo.kRendererObjectTypeShader
-    shaderNames = rendererInfoPlugin.getRendererObjectNames( shaderType )
+    shaderNames = rendererInfoPlugin.getRendererObjectNames(shaderType)
 
-    # Add non-shading node entries.
-    layeredMenu.addEntry( 'PrmanShadingNode', text='PrmanShadingNode', color=(1.0, 0.78, 0.0) )
+    excludeNodesSet = set(excludeList)
+    shaderNames = [shader for shader in shaderNames if shader not in excludeNodesSet]
 
-    # Iterate over the names of shaders and add a menu entry for each of them to the given layered menu.
-    # Note: Can set the text value to whatever you want the user to see when selecting a shading node.
-    for shaderName in shaderNames:
-        if( shaderName in excludeList ): continue
+    return shaderNames
 
-        displayName = shaderName
+# Pxr shaders.
+def get_pxr_shaders():
+    prmanShaders = get_prman_shaders()
 
-        # Handle custom shader naming.
-        if( customDict.get( shaderName )):
-            displayName = customDict.get( shaderName )
+    pxrShaders = [shader for shader in prmanShaders
+                    if shader.startswith('Pxr')
+                    or shader == 'aaOceanPrmanShader'
+                    or shader == 'OmnidirectionalStereo']
 
-        # Set the node's color based on its shader category.
-        displayColor = find_color( shaderName )
-        layeredMenu.addEntry( shaderName, text=displayName, color=displayColor )
+    return pxrShaders
 
+# Primary shaders.
+def get_primary_shaders():
+    pixarNodesSet = set(get_pxr_shaders())
 
-def populateCallbackSansPxr( layeredMenu ):
-    """
-    Callback for the layered menu, which adds entries to the given
-    C{layeredMenu} based on the available shading nodes.
+    primaryShaders = [shader for shader in get_prman_shaders() 
+                      if shader not in pixarNodesSet]
 
-    @type layeredMenu: L{LayeredMenuAPI.LayeredMenu}
-    @param layeredMenu: The layered menu to add entries to.
-    """
-    # Obtain a list of names of available PRMan shaders from the PRMan renderer info plug-in.
-    rendererInfoPlugin = RenderPlugins.GetInfoPlugin( 'prman' )
-    shaderType = RenderingAPI.RendererInfo.kRendererObjectTypeShader
-    shaderNames = rendererInfoPlugin.getRendererObjectNames( shaderType )
+    # Remove shaders that start with a value in excludeCategory.
+    primaryShaders = [shader for shader in primaryShaders
+                      if not any(shader.startswith(group) for group in excludeCategory)]
 
-    # Add non-shading node entries.
-    layeredMenu.addEntry( 'PrmanShadingNode', text='PrmanShadingNode', color=(1.0, 0.78, 0.0) )
+    primaryShaders.extend(primaryNodes)
 
-    # Iterate over the names of shaders and add a menu entry for each of them to the given layered menu.
-    # Note: Can set the text value to whatever you want the user to see when selecting a shading node.
-    for shaderName in shaderNames:
-        if( shaderName in excludeList ): continue
+    return primaryShaders
 
-        if( shaderName.startswith( 'Pxr' )
-           and not shaderName == 'PxrDisplace'
-           or shaderName == 'aaOceanPrmanShader'
-           or shaderName == 'OmnidirectionalStereo'
-           ): continue
+# Add menu entry.
+def add_shader_to_menu(shaderName, layeredMenu, useColor=True):
+    displayName = shaderName
 
-        displayName = shaderName
+    # Set the node's color based on its shader category.
+    displayColor = find_color(shaderName) if useColor else None
 
-        # Handle custom shader naming.
-        if( customDict.get( shaderName )):
-            displayName = customDict.get( shaderName )
+    # Add the shader node to the menu.
+    layeredMenu.addEntry(shaderName, text=displayName, color=displayColor)
 
-        # Set the node's color based on its shader category.
-        displayColor = find_color( shaderName )
-        layeredMenu.addEntry( shaderName, text=displayName, color=displayColor )
+# alt+p shading node list.
+def populateCallback_Primary(layeredMenu):
+    for shaderName in get_primary_shaders():
+        add_shader_to_menu(shaderName, layeredMenu)
+
+    # Add the LaSh macros.
+    for nodeName, filename in _RegisteredCustomNodeTypes.items():
+        if nodeName.startswith( 'LaSh' ):
+            textName = nodeName
+            displayColor = find_color( nodeName )
+            layeredMenu.addEntry( nodeName, text=textName, color=displayColor )
+
+# alt+r shading node list.
+def populateCallback_Pxr(layeredMenu):
+    for shaderName in get_pxr_shaders():
+        add_shader_to_menu(shaderName, layeredMenu)
 
 
 def actionCallback( value ):
     """
     Callback for the layered menu, which creates a PrmanShadingNode node and
     sets its B{nodeType} parameter to the given C{value}, which is the name of
-    a PRMan shader as set for the menu entry in L{populateCallback()}.
+    a PRMan shader as set for the menu entry in L{populateCallback_Primary()}.
 
     @type value: C{str}
     @rtype: C{object}
     @param value: An arbitrary object that the menu entry that was chosen
         represents. In our case here, this is the name of a PRMan shader as
         passed to the L{LayeredMenuAPI.LayeredMenu.addEntry()} function in
-        L{populateCallback()}.
+        L{populateCallback_Primary()}.
     @return: An arbitrary object. In our case here, we return the created
         PrmanShadingNode node, which is then placed in the B{Node Graph} tab
         because it is a L{NodegraphAPI.Node} instance.
@@ -161,10 +160,6 @@ def actionCallback( value ):
 
     # Initialize the node name to the shaderName value.
     name = value
-
-    # Handle custom shader naming.
-    if( customDict.get( value )):
-        name = customDict.get( value )
 
     # Init nodes list.
     nodes = list()
@@ -265,13 +260,8 @@ def actionCallback( value ):
         node.getParameter( 'nodeType' ).setValue( '', 0 )
         nodes.append( node )
 
-    elif( value == 'ShadingGroup' ):
-        node = NodegraphAPI.CreateNode( 'ShadingGroup', root )
-        nodes.append( node )
-
-    elif( value.startswith( 'ShadingGroup_' )):
-        nodeTypeName = value.lstrip( 'ShadingGroup_' )
-        node = NodegraphAPI.CreateNode( nodeTypeName, root )
+    elif( value.startswith( 'LaSh' )):
+        node = NodegraphAPI.CreateNode( value, root )
         nodes.append( node )
 
     else:
@@ -296,14 +286,14 @@ def actionCallback( value ):
 
 
 # Shading Node Popup Menus.
-layeredMenu = LayeredMenuAPI.LayeredMenu( populateCallback, actionCallback, 'Alt+Shift+P',
+layeredMenu = LayeredMenuAPI.LayeredMenu( populateCallback_Primary, actionCallback, 'Alt+P',
                                             alwaysPopulate = False,
                                             onlyMatchWordStart = False
                                             )
-LayeredMenuAPI.RegisterLayeredMenu( layeredMenu, 'All Shading Nodes' )
+LayeredMenuAPI.RegisterLayeredMenu( layeredMenu, 'Shading Nodes' )
 
-layeredMenuSansPxr = LayeredMenuAPI.LayeredMenu( populateCallbackSansPxr, actionCallback, 'Alt+P',
+layeredMenuPxr = LayeredMenuAPI.LayeredMenu( populateCallback_Pxr, actionCallback, 'Alt+R',
                                                 alwaysPopulate = False,
                                                 onlyMatchWordStart = False
                                                 )
-LayeredMenuAPI.RegisterLayeredMenu( layeredMenuSansPxr, 'Shading Nodes' )
+LayeredMenuAPI.RegisterLayeredMenu( layeredMenuPxr, 'Pxr Nodes' )

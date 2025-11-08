@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch J Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -17,11 +17,11 @@ shader data_BuiltIn
         int connectable = 0,
         string help =
             "Access the "
-            "<a href='https://rmanwiki.pixar.com/display/REN25/RixShadingContext#RixShadingContext-getbuiltinvarBuiltinVariables'>"
+            "<a href='https://rmanwiki.pixar.com/display/REN/RixShadingContext#RixShadingContext-getbuiltinvarBuiltinVariables'>"
             "RenderMan Built-in Variables</a>. "
     ]],
 
-    string Space = "object"
+    string Space = "common"
     [[
         int connectable = 0,
         string widget = "popup", int editable = 1,
@@ -36,11 +36,6 @@ shader data_BuiltIn
         string help =
             "Selects what <b>Space</b> the <i>point</i>, <i>normal</i>, and <i>vector</i> "
             "output values are in. You may also type in the name of your own coordinate system. "
-            "<p>"
-            "Note: <i>common</i> space <b>is not consistent</b> between bxdf and displacement shading networks. "
-            "Choose a different <b>Space</b> if you want these values to be the same in bxdf and displacement "
-            "shading networks. "
-            "</p>"
     ]],
 
     int Negate = 0

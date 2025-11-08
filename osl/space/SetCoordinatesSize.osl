@@ -1,0 +1,188 @@
+/*
+ *  Copyright 2024 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader space_SetCoordinatesSize
+[[
+    int rfm_nodeid = 0000000,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Setting <b>Coordinates Size</b> properly establishes the scale "
+            "relationship between the Texture UVs and the 3D space that the "
+            "patterns and displacements exist in. "
+            "<p>"
+            "To do so, it creates an RGB output pattern that can to used to tune the "
+            "value of the <b>Coordinates Size</b> parameter in a <b>space_2D</b> node "
+            "so that it produces the correct pattern/displacement size in its "
+            "<b>OutSize</b> parameter. "
+            "<p>"
+            "A pattern in the <b>RGB</b> output's red and blue channels represents "
+            "the 2D <b>Coordinates</b> size. "
+            "A checkerboard pattern in the green channel represents the 3D "
+            "<b>Size Space</b>. "
+            "</p>"
+            "The <b>Coordinates Size</b> should be adjusted until the two "
+            "patterns generally match in scale: the areas of the two features are roughly equal. "
+    ]],
+
+    int Coordinates = 0
+    [[
+        int connectable = 0,
+        string widget = "mapper",
+        string options = "Texture UV:0|Primitive Variable:1|Geometric uv space:2",
+        string help = 
+            "Selects which 2D parametric <b>Coordinates</b> to use. "
+            "This determines what the output values will <i>stick</i> to. "
+            "<p>"
+            "<i>Texture UV</i> refers to the <code>st</code> primvar data created "
+            "in modeling and paint applications for applying textures to an object. "
+            "This often has integer UV Index/Atlas values added to it that identify "
+            "which texture filenames to use on different object patches. "
+            "</p>"
+            "<p>"
+            "<i>Primitive Variable</i> is used to access an arbitrary primvar other "
+            "than <code>st</code>. "
+            "</p>"
+            "<p>"
+            "<i>Geometric uv space</i> is the natural parametric space of the geometry itself. "
+            "</p>"
+    ]],
+
+    string PrimitiveVariable = "st"
+    [[
+        int connectable = 0,
+        string label = "Primitive Variable",
+        string conditionalVisPath = "../Coordinates",
+        string conditionalVisOp = "equalTo",
+        string conditionalVisValue = "1",
+        string help = 
+            "The name of the <b>Primitive Variable</b> the results will stick to. "
+            "<p>"
+            "If the given primvar cannot be found, <i>Texture UV</i> will be used instead. "
+            "And if those cannot be found, the <i>Geometric uv space</i> will be used. "
+            "</p>"
+    ]],
+
+    string SizeSpace = "world"
+    [[
+        int connectable = 0,
+        string label = "Size Space",
+        string widget = "popup", int editable = 1,
+        string options =
+            "object"
+            "|world",
+        string help =
+            "Defines in what space the size of pattern variations "
+            "and displacement magnitudes will be measured. "
+            "This should match the <b>Magnitude Space</b> "
+            "value used in displacement nodes or the  "
+            "<b>Size Space</b> value used in the space_3D node. "
+    ]],
+
+    float  CoordinatesSize = 20.0
+    [[
+        string label = "Coordinates Size",
+        int slider = 1, float slidermin = 0.0, float slidermax = 40.0,
+        string help = 
+            "The size of the <b>Coordinates</b> in <b>Size Space</b>: how many units "
+            "of 3D <b>Size Space</b> are in 1 unit of the 2D <b>Coordinates</b> space. "
+            "<p>"
+            "A pattern in the <b>RGB</b> output's red and blue channels represents "
+            "the 2D <b>Coordinates</b> size. "
+            "A checkerboard pattern in the green channel represents the 3D "
+            "<b>Size Space</b>. "
+            "Toggling between the red and green channels may make their relationship "
+            "more clear than viewing the full color result. "
+            "</p>"
+            "This value can vary considerably from one object to another, "
+            "or even from one surface patch to another, depending on the "
+            "Texture UV or other Coordinates mapping as it has "
+            "been defined for the object. "
+            "<p>"
+            "The <b>space_SetCoordiantesSize</b> node exists specifically "
+            "to help you set the <b>Coordinates Size</b> parameter in the "
+            "<b>space_2D</b> and <b>mutable_2D_v1</b> shading nodes. "
+            "</p>"
+    ]],
+
+    output color RGB = color(0.0),
+    output float OutCoordinatesSize = 1.0,
+
+    // Will read the 'st' primvar, or sets (s,t) = (u,v) if there is none.
+    float  s = u [[ int lockgeom = 0, int connectable = 0, string widget = "null" ]],
+    float  t = v [[ int lockgeom = 0, int connectable = 0, string widget = "null" ]]
+)
+{
+    // Get st space: the Texture UVs.
+    point  Out = point( s, t, 0 );
+
+    // Primitive Variable.
+    if( 1 == Coordinates )
+    {
+        float  primvar[2];
+        if( getattribute( "primvar", PrimitiveVariable, primvar ))
+        {
+            Out.x = primvar[0];
+            Out.y = primvar[1];
+        }
+        else
+        {
+            float  primvar[3];
+            if( getattribute( "primvar", PrimitiveVariable, primvar ))
+            {
+                Out.x = primvar[0];
+                Out.y = primvar[1];
+            }
+            else
+            {
+                point  primvar;
+                if( getattribute( "primvar", PrimitiveVariable, primvar ))
+                {
+                    // Restore original values.
+                    primvar = transform( "common", "object", primvar );
+                    Out.x = primvar[0];
+                    Out.y = primvar[1];
+                }
+            }
+        }
+    }
+
+    // Geometric uv.
+    else if( 2 == Coordinates )
+    {
+        Out.x = u;
+        Out.y = v;
+    }
+
+    // 2D pattern.
+    Out *= CoordinatesSize;
+    Out -= floor( Out );
+
+    float  a = min( Out.x, Out.y );
+
+    // Generate the 3D pattern.
+    point  Q = transform( "common", SizeSpace, P ) * 0.5;
+    Q = 2 * min( mod(Q,1), mod(-Q,1) ); // Triangle.
+    Q = smoothstep( 0.25, 0.75 , Q );
+
+    // 3D pattern.
+    float  b = Q.x;
+    b = mix( b, 1.0-b, Q.y );
+    b = mix( b, 1.0-b, Q.z );
+
+    // Combine them.
+    RGB = color( b, a, b );
+    RGB = sqrt( RGB );
+
+    // Set the output.
+    OutCoordinatesSize = CoordinatesSize;
+}

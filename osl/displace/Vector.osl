@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -17,7 +17,8 @@ shader displace_Vector
         int connectable = 0,
         string help =
             "Create LaSh Displacement (LaD) components (Nd, DeltaP, and Bulk) "
-            "from a <b>Vector</b> pattern input. "
+            "from a surface <b>Vector</b> pattern. Also pass-through the "
+            "<b>Vector Size</b> for use in downstream nodes. "
     ]],
 
     vector Vector = vector(0.0)
@@ -25,10 +26,10 @@ shader displace_Vector
         string label = "Vector",
         string readOnly = "True",
         string help =
-            "The surface is offset directly by the <b>Vector</b> value: "
-            "P += <b>Vector</b>. "
+            "The surface is offset directly by this value: "
+            "P += Vector "
             "<p>"
-            "The <b>Vector</b> is assumed to contain values whose lengths "
+            "The Vector is assumed to contain values whose lengths "
             "range between 0 and 1. "
             "</p>"
     ]],
@@ -38,7 +39,9 @@ shader displace_Vector
         string label = "Vector Size",
         string readOnly = "True",
         string help =
-            "The <b>Size</b> of the connected <b>Vector</b> pattern variations. "
+            "The Size of the connected <b>Vector</b> pattern variations: "
+            "its characteristic wavelength in <b>Magnitude Space</b>. "
+            "This value is passed-through to the output <b>Size</b>. "
     ]],
 
     float Magnitude = 0.5
@@ -46,7 +49,8 @@ shader displace_Vector
         string label = "Magnitude",
         int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
         string help =
-            "Controls the <b>Magnitude</b> of the displacement. "
+            "Controls the magnitude of the displacement. "
+            "Its units are determined by the <b>Magnitude Space</b>. "
     ]],
 
     string MagnitudeSpace = "world"
@@ -58,17 +62,16 @@ shader displace_Vector
             "object"
             "|world",
         string help =
-            "Determines in what <b>Space</b> the units of <b>Magnitude</b> are specified: "
-            "how big is 1 unit of <b>Magnitude</b> displacement?"
+            "Determines in what space the units of <b>Vector Size</b> are specified, "
+            "which also determines how big 1 unit of <b>Magnitude</b> displacement is. "
     ]],
 
     int Invert = 0
     [[
-        int connectable = 0,
         string label = "Invert",
         string widget = "checkBox",
         string help =
-            "<b>Invert</b> the displacement pattern: high becomes low, "
+            "Invert the displacement pattern: high becomes low, "
             "concave becomes convex, and vice versa. "
     ]],
 
@@ -77,7 +80,7 @@ shader displace_Vector
         string label = "Bulk Gain",
         int slider = 1, float slidermin = 0.0, float slidermax = 2.0,
         string help =
-            "Scales the output <b>Bulk</b> relative "
+            "Scales the output <b>Bulk</b> value relative "
             "to the displacement <b>Magnitude</b>. "
             "Bulk is used when displacements Accumulate. "
             "Useful when the input <b>Vector</b> length does not occupy the 0 to 1 "
@@ -87,7 +90,8 @@ shader displace_Vector
 
     output normal Nd = N,
     output vector DeltaP = vector(0.0),
-    output float  Bulk = 0.0
+    output float  Bulk = 0.0,
+    output float  Size = 1.0
 )
 {
     // Invert?
@@ -122,4 +126,7 @@ shader displace_Vector
 
     // Displacement accumulation Bulk.
     Bulk = magnitude * BulkGain;
+
+    // Pass-through the Vector Size.
+    Size = VectorSize;
 }

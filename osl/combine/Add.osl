@@ -1,0 +1,38 @@
+/*
+ *  Copyright 2024 Mitch J Prater. Modified for use at LAIKA.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#include "combine/Input.h"
+
+shader combine_Add
+[[
+    int rfm_nodeid = 1234355,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Add the A and B inputs: output = A + B. "
+            "<p>"
+            "OutSize is the average of the two input Sizes. "
+            "</p>"
+    ]],
+
+    INPUT_PARAMS(A),
+    INPUT_PARAMS(B),
+
+    output float out = 0.0,
+    output color Out = color(0.0),
+    output float OutSize = 1.0
+)
+{
+    out = A_in + B_in;
+    Out = A_In + B_In;
+    OutSize = 0.5*( A_Size + B_Size );
+}

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch J Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -16,7 +16,10 @@ shader osl_mix
     [[
         int connectable = 0,
         string help =
-            "The mix function returns a linear blending : x * (1 - a) + y * (a)"
+            "out = mix(x,y,a). The mix function returns a linear blending : x * (1 - a) + y * (a)"
+            "<p>"
+            "<a href='https://open-shading-language.readthedocs.io/en/stable/stdlib.html'>OSL Standard Library Functions</a>"
+            "</p>"
     ]],
 
     float x = 0,

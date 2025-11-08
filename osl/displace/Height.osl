@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -17,7 +17,8 @@ shader displace_Height
         int connectable = 0,
         string help =
             "Create LaSh Displacement (LaD) components (Nd, DeltaP, and Bulk) "
-            "from a surface <b>Height</b> pattern. "
+            "from a surface <b>Height</b> pattern. Also pass-through the "
+            "<b>Height Size</b> for use in downstream nodes. "
     ]],
 
     float Height = 0.5
@@ -25,10 +26,10 @@ shader displace_Height
         string label = "Height",
         string readOnly = "True",
         string help =
-            "<b>Height</b> is used to displace the surface along the <b>Normal</b> "
-            "direction. "
-            "The <b>Height</b> value is assumed to range between 0 and 1, "
-            "so <b>Height</b> is first offset by &ndash;0.5 so it ranges "
+            "This value determines how much to displace the surface "
+            "along the <b>Normal</b> direction. "
+            "Its value is assumed to range between 0 and 1, "
+            "so Height is first offset by &ndash;0.5 so it ranges "
             "from &ndash;0.5 to +0.5 to produce balanced variations above "
             "and below the surface. "
     ]],
@@ -38,7 +39,9 @@ shader displace_Height
         string label = "Height Size",
         string readOnly = "True",
         string help =
-            "The <b>Size</b> of the connected <b>Height</b> pattern variations. "
+            "The Size of the connected <b>Height</b> pattern variations: "
+            "its characteristic wavelength in <b>Magnitude Space</b>. "
+            "This value is passed-through to the output <b>Size</b>. "
     ]],
 
     normal Normal = N
@@ -50,7 +53,7 @@ shader displace_Height
             "Specified in <b><i>common</i></b> space. "
             "This defines the direction the <b>Height</b> "
             "and <b>Offset</b> move the surface. "
-            "Uses the global surface normal <b>N</b> if not connected. "
+            "Uses the global surface normal <tt>N</tt> if not connected. "
     ]],
 
     float Offset = 0.0
@@ -63,10 +66,10 @@ shader displace_Height
             "from &ndash;0.5 to +0.5 to produce balanced variations above "
             "and below the surface. "
             "<p>"
-            "<b>Offset</b> is then added to this new <b>Height</b> value, "
-            "allowing you to generate only peaks (<b>Offset</b> = <i>+0.5</i> ), "
-            "a combination of peaks and valleys (<b>Offset</b> = <i>0.0</i> ), "
-            "or just valleys (<b>Offset</b> = <i>&ndash;0.5</i> ) "
+            "Offset is then added to this new Height value, "
+            "allowing you to generate only peaks (Offset = <i>+0.5</i> ), "
+            "a combination of peaks and valleys (Offset = <i>0.0</i> ), "
+            "or just valleys (Offset = <i>&ndash;0.5</i> ) "
             "in the displaced surface. "
             "</p>"
     ]],
@@ -76,7 +79,8 @@ shader displace_Height
         string label = "Magnitude",
         int slider = 1, float slidermin = 0.0, float slidermax = 2.0,
         string help =
-            "Controls the <b>Magnitude</b> of the displacement. "
+            "Controls the magnitude of the displacement. "
+            "Its units are determined by the <b>Magnitude Space</b>. "
     ]],
 
     string MagnitudeSpace = "world"
@@ -88,17 +92,16 @@ shader displace_Height
             "object"
             "|world",
         string help =
-            "Determines in what <b>Space</b> the units of <b>Magnitude</b> are specified: "
-            "how big is 1 unit of <b>Magnitude</b> displacement?"
+            "Determines in what space the units of <b>Height Size</b> are specified, "
+            "which also determines how big 1 unit of <b>Magnitude</b> displacement is. "
     ]],
 
     int Invert = 0
     [[
-        int connectable = 0,
         string label = "Invert",
         string widget = "checkBox",
         string help =
-            "<b>Invert</b> the displacement pattern: high becomes low, "
+            "Invert the displacement pattern: high becomes low, "
             "concave becomes convex, and vice versa. "
     ]],
 
@@ -107,7 +110,7 @@ shader displace_Height
         string label = "Bulk Gain",
         int slider = 1, float slidermin = 0.0, float slidermax = 2.0,
         string help =
-            "Scales the output <b>Bulk</b> relative "
+            "Scales the output <b>Bulk</b> value relative "
             "to the displacement <b>Magnitude</b>. "
             "Bulk is used when displacements Accumulate. "
             "Useful when the input <b>Height</b> does not occupy the 0 to 1 "
@@ -117,7 +120,8 @@ shader displace_Height
 
     output normal Nd = N,
     output vector DeltaP = vector(0.0),
-    output float  Bulk = 0.0
+    output float  Bulk = 0.0,
+    output float  Size = 1.0
 )
 {
     // Invert?
@@ -155,4 +159,7 @@ shader displace_Height
 
     // Displacement accumulation Bulk.
     Bulk = magnitude*( 0.5 + Offset ) * BulkGain;
+
+    // Pass-through the Height Size.
+    Size = HeightSize;
 }

@@ -245,56 +245,6 @@ shader pattern_FractalNoise
             "Sets the repetition interval for any <b>Variation.</b> "
     ]],
 
-    int Periodic = 0
-    [[
-        int connectable = 0,
-        string widget = "checkBox",
-        string conditionalVisPath = "../NoiseType",
-        string conditionalVisOp = "notEqualTo",
-        string conditionalVisValue = "usimplex",
-        string help =
-            "Does the resulting pattern repeat or not? "
-    ]],
-
-    int SpacePeriod = 5
-    [[
-        int connectable = 0,
-        string label = "Space Period",
-        int slider = 1, int slidermin = 1, int slidermax = 20,
-        string conditionalVisOp = "and",
-        string conditionalVisLeft = "conditionalVis0",
-        string conditionalVisRight = "conditionalVis1",
-        string conditionalVis0Path = "../Periodic",
-        string conditionalVis0Op = "equalTo",
-        string conditionalVis0Value = "1",
-        string conditionalVis1Path = "../NoiseType",
-        string conditionalVis1Op = "notEqualTo",
-        string conditionalVis1Value = "usimplex",
-        string help =
-            "At what <b>Space</b> dimension should the pattern repeat? "
-            "This defines a cube in the <b>Space</b>, where all cubes "
-            "of this <b>Space Period</b> size contain the same pattern, "
-            "and the pattern tiles from one cube to the next. "
-    ]],
-
-    int VariationPeriod = 5
-    [[
-        int connectable = 0,
-        string label = "Variation Period",
-        string conditionalVisOp = "and",
-        string conditionalVisLeft = "conditionalVis0",
-        string conditionalVisRight = "conditionalVis1",
-        string conditionalVis0Path = "../Periodic",
-        string conditionalVis0Op = "equalTo",
-        string conditionalVis0Value = "1",
-        string conditionalVis1Path = "../NoiseType",
-        string conditionalVis1Op = "notEqualTo",
-        string conditionalVis1Value = "usimplex",
-        int slider = 1, int slidermin = 1, int slidermax = 20,
-        string help =
-            "Sets the repetition interval for any <b>Variation.</b> "
-    ]],
-
     output float  Float = 0.0,
     output color  Gray = color(0.0),
     output color  Color = color(0.0),
@@ -321,9 +271,9 @@ shader pattern_FractalNoise
     Q /= size;
 
     // Initialize the iteration variables.
-    float  freq = 1.0;
     color  sum = color(0.0);
     color  mag = color(1.0);
+    float  freq = 1.0;
 
     Color = color(0.0);
 
@@ -333,28 +283,29 @@ shader pattern_FractalNoise
         // This iteration's pattern.
         color  iP;
 
-        // This iteration's Variation offset.
-        float  variation = Variation + i*Lacunarity;
-
         // Compute this iteration's pattern.
         if( 1 == Periodic && "usimplex" != NoiseType )
         {
-            // This iteration's periodic space.
+            // This iteration's periodic interval.
             float  interval = round( freq*SpacePeriod );
-            point  iQ = Q*interval/SpacePeriod;
+
+            // This iteration's periodic space.
+            point  iQ = Q*interval / SpacePeriod;
+
+            // This iteration's spatial offset.
+            float  iOffset = ( i*Lacunarity + Variation )*interval / SpacePeriod;
 
             if( 2 == NoiseDim )
             {
-                point  xyv = point( iQ.x, iQ.y, Variation );
-                iP = pnoise( NoiseType, xyv, SpacePeriod );
+                iP = pnoise( NoiseType, iQ.x + iOffset, iQ.y + iOffset, SpacePeriod, SpacePeriod );
             }
             else if( 3 == NoiseDim )
             {
-                iP = pnoise( NoiseType, iQ + vector(Variation), SpacePeriod );
+                iP = pnoise( NoiseType, iQ + vector(iOffset), SpacePeriod );
             }
             else // 4 == NoiseDim
             {
-                iP = pnoise( NoiseType, iQ, Variation, SpacePeriod, VariationPeriod );
+                iP = pnoise( NoiseType, iQ, iOffset, SpacePeriod, VariationPeriod );
             }
         }
         else
@@ -362,17 +313,20 @@ shader pattern_FractalNoise
             // This iteration's space.
             point  iQ = Q*freq;
 
+            // This iteration's spatial offset.
+            float  iOffset = i*Lacunarity + Variation;
+
             if( 2 == NoiseDim )
             {
-                iP = noise( NoiseType, iQ.x + variation, iQ.y + variation );
+                iP = noise( NoiseType, iQ.x + iOffset, iQ.y + iOffset );
             }
             else if( 3 == NoiseDim )
             {
-                iP = noise( NoiseType, iQ + vector(variation) );
+                iP = noise( NoiseType, iQ + vector(iOffset) );
             }
             else // 4 == NoiseDim
             {
-                iP = noise( NoiseType, iQ, variation );
+                iP = noise( NoiseType, iQ, iOffset );
             }
         }
 
@@ -383,12 +337,11 @@ shader pattern_FractalNoise
         // Add this iteration's contribution to the result.
         Color += mag * iP;
 
-        // Update the iteration variables for the next iteration.
-        Q += mag * Distortion*vector( iP - color(0.5) );
+        // Accumulate this iteration's magnitude.
         sum += mag;
-        freq *= Lacunarity;
 
-        // Erosion magnitude adjustment.
+        // Update variables for the next iteration.
+        // Erosion magnitude adjustment (based on normalized current result).
         color  erosion = mix( color(Erosion), -color(Erosion), Color/sum );
 
         if( 0 == FractalType )
@@ -403,6 +356,9 @@ shader pattern_FractalNoise
             gain = clamp( gain, color(0.01), color(0.99) );
             mag = pow( gain, i );
         }
+
+        Q += mag * Distortion*vector( iP - color(0.5) );
+        freq *= Lacunarity;
     }
     // End fractal computation.
 

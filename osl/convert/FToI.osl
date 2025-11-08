@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch J Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -36,10 +36,11 @@ shader convert_FToI
             "|ceil:2",
         string help =
             "Selects the float to integer conversion: "
-            "<br/>"
-            "<br/>Int = round( Float ) "
-            "<br/>Int = floor( Float ) "
-            "<br/>Int = ceil( Float ) "
+            "<p>"
+            "<br>Int = round( Float ) "
+            "<br>Int = floor( Float ) "
+            "<br>Int = ceil( Float ) "
+            "</p>"
     ]],
 
     output int Int = 0

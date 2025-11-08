@@ -1,10 +1,12 @@
 # Layered Shading (LaSh)
 
-![LashLayers](media/Layers1280x640.jpg)
+![Layered Materials](media/Layers1280x640.jpg)
 
 This repository and its associated documentation contain the latest public reference implementation of the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dl.acm.org/doi/10.1145/3603521.3604289).
 
-Similar to the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home) from which it is derived, LaSh incorporates bxdfs and displacements into its definition of a LaSh Material so that it can represent a true physical substance, and implements a bxdf and displacement layering capability so LaSh Materials can be easily layered in a physically plausible way.
+Similar to the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home) from which it is derived,
+LaSh incorporates bxdfs and displacements into its definition of a LaSh Material shader so that it can represent a true physical substance,
+and implements a bxdf and displacement layering capability so LaSh Material shaders can be easily and intuitively layered over one another in a physically plausible way.
 
 Documentation is in the [`doc`](doc) directory.
 
@@ -20,9 +22,8 @@ I'd love you hear what you think, or to discuss any issues or thoughts you may h
 and the `make` system.
 * Foundry's [Katana](https://www.foundry.com/products/katana) and its
 associated [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools)
-are required to make use of the high-level ShadingGroup macros,
-which contain the LaSh Material Layering and other functionality packaged for use in Katana,
-as well as the supplied Katana [`project`](./katana/project/) scene files.
+are required to make use of the [LaSh Material](doc/README.md#the-lash-material) functionality packaged for use in Katana,
+as well as the [Example](doc/README.md#examples) Katana [`project`](./katana/project/) files.
 
 Other rendering and application systems can still make use of the core [`osl`](./osl/) shading nodes and `make` system to assemble the necessary functionality to implement the LaSh system in those environments.
 
@@ -35,18 +36,18 @@ To use the supplied repository content as is:
 
     1. Optionally install [Katana](https://www.foundry.com/products/katana) and [RenderMan for Katana](https://renderman.pixar.com/bridge-tools) and ensure they are functioning properly.
      While optional, this step is highly recommended, as the core LaSh functionality is packaged into Katana [ShadingGroup](https://learn.foundry.com/katana/Content/ug/adding_assigning_materials/using_the_shadinggroup_node.html) macros.
-     If another [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools) is used, you'll have to implement their functionality yourself using the individual [`osl`](./osl/) and [Lama](https://rmanwiki.pixar.com/display/REN25/MaterialX+Lama) shading nodes.
+     If another [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools) is used, you'll have to implement their functionality yourself using the individual [`osl`](./osl/) and [Lama](https://rmanwiki.pixar.com/display/REN/MaterialX+Lama) shading nodes.
 
 1. Set these environment variables appropriately. These are required by the [make](https://www.gnu.org/software/make/manual/) system that's used to compile and install the shaders:
     * PIXAR_ROOT
     * RMAN_VERSION
 
     For example, if your version of RenderManProServer is installed in
-    `/opt/pixar/RenderManProServer-25.0`, then using `bash` shell:
+    `/opt/pixar/RenderManProServer-26.0`, then using `bash` shell:
 
     ```bash
     export PIXAR_ROOT="/opt/pixar"
-    export RMAN_VERSION="25.0"
+    export RMAN_VERSION="26.0"
     ```
     
     Since RenderManProServer requires an RMANTREE environment variable to be set to its installation location, you can conveniently use these to define it as well:
@@ -67,7 +68,7 @@ In this way, you can edit a source file and execute `make` from within the osl d
 `make clean` removes the built shaders, and `make help` provides additional information about the make system and how it's controlled.
 
 1. Set these environment variables appropriately.
-    1. This is required so the built shaders can be found by [RenderMan](https://rmanwiki.pixar.com/display/REN25) and a [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools):
+    1. This is required so the built shaders can be found by [RenderMan](https://rmanwiki.pixar.com/display/REN) and a [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools):
 
         - RMAN_SHADERPATH
 
@@ -77,12 +78,14 @@ In this way, you can edit a source file and execute `make` from within the osl d
         export RMAN_SHADERPATH="${HOME}/LaSh/build/${RMAN_VERSION}/shaders:${RMAN_SHADERPATH}"
         ```
 
-    1. If you're using [Katana](https://www.foundry.com/products/katana) and you want to make use of the supplied [ShadingGroup](https://learn.foundry.com/katana/Content/ug/adding_assigning_materials/using_the_shadinggroup_node.html) macros and the shading node "alt+p" and "alt+shift+p" Shading Node Menus:
+    1. If you're using [Katana](https://www.foundry.com/products/katana) and you want to make use of the supplied
+    [LaSh Nodes](doc/README.md#lash-nodes) and the Katana **alt+p** and **alt+r** Shading Node Menus:
 
         ```bash
         export KATANA_RESOURCES="${HOME}/LaSh/build/katana:${KATANA_RESOURCES}"
         ```
-        so that katana will load them when it starts.
+        so that katana will load them and the custom shading node menus when it starts.
+        The **alt+p** menu lists all the shaders built from this repository and the **alt+r** menu shows the Pixar-supplied RenderMan shaders.
 
 # License
 This repository's content is licensed under either the

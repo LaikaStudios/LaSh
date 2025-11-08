@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch J Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -20,17 +20,17 @@ shader convert_CToF
             "along with the average of the <b>R G B</b> component values. "
     ]],
 
+    color Color = color(1.0)
+    [[
+        string help =
+            "The Color value to convert. "
+    ]],
+
     float Gain = 1.0
     [[
         int slider = 1, float slidermin = 0.1, float slidermax = 10.0, float slidercenter = 1.0,
         string help =
-            "<b>Gain</b> scales the results. "
-    ]],
-
-    color Color = color(1.0)
-    [[
-        string help =
-            "The <b>Color</b> value to convert. "
+            "Scales the result. "
     ]],
 
     output float  R = 0.0,

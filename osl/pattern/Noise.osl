@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2021 LAIKA. Authored by Mitch J Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -38,15 +38,13 @@ shader pattern_Noise
         string readOnly = "True",
         string help =
             "The <b>Size</b> of the connected <b>Space</b>. "
-            "Along with the pattern's <b>Size</b> parameter, this determines "
-            "the size of the resulting pattern variations this node produces. "
     ]],
 
     float Size = 1.0
     [[
         int slider = 1, float slidermin = 0.1, float slidercenter = 1.0, float slidermax = 10.0,
         string help =
-            "Controls the <b>Size</b> of the pattern variations. "
+            "Controls the <b>Size</b> of the pattern variation. "
     ]],
 
     string NoiseType = "uperlin"
@@ -64,12 +62,15 @@ shader pattern_Noise
         int connectable = 0,
         string label = "Noise Dim",
         string widget = "mapper",
-        string options = "2D:2|3D:3|4D:4",
+        string options = "1D:1|2D:2|3D:3|4D:4",
         string help =
             "Explicitly controls the <b>Dimension</b> of the <b>Noise</b>. "
+            "For best results, use the lowest dimension for your pattern generation space. "
             "This can have a particularly large impact on the <i>Simplex</i> <b>Noise Type</b>. "
     ]],
 
+    // Organizationally, they ought to go right after Size,
+    // but put them here since they're rarely used.
     float Variation = 0.0
     [[
         int slider = 1, float slidermin = 0.0, float slidermax = 10.0,
@@ -77,6 +78,56 @@ shader pattern_Noise
             "This varies the result without changing any of its fundamental "
             "characteristics. Can be used to animate the resulting pattern, "
             "or just produce a different variant of it. "
+    ]],
+
+    int Periodic = 0
+    [[
+        int connectable = 0,
+        string widget = "checkBox",
+        string conditionalVisPath = "../NoiseType",
+        string conditionalVisOp = "notEqualTo",
+        string conditionalVisValue = "usimplex",
+        string help =
+            "Does the resulting pattern repeat or not? "
+    ]],
+
+    int SpacePeriod = 5
+    [[
+        int connectable = 0,
+        string label = "Space Period",
+        int slider = 1, int slidermin = 1, int slidermax = 20,
+        string conditionalVisOp = "and",
+        string conditionalVisLeft = "conditionalVis0",
+        string conditionalVisRight = "conditionalVis1",
+        string conditionalVis0Path = "../Periodic",
+        string conditionalVis0Op = "equalTo",
+        string conditionalVis0Value = "1",
+        string conditionalVis1Path = "../NoiseType",
+        string conditionalVis1Op = "notEqualTo",
+        string conditionalVis1Value = "usimplex",
+        string help =
+            "At what <b>Space</b> dimension should the pattern repeat? "
+            "This defines a cube in the <b>Space</b>, where all cubes "
+            "of this <b>Space Period</b> size contain the same pattern, "
+            "and the pattern tiles from one cube to the next. "
+    ]],
+
+    int VariationPeriod = 5
+    [[
+        int connectable = 0,
+        string label = "Variation Period",
+        string conditionalVisOp = "and",
+        string conditionalVisLeft = "conditionalVis0",
+        string conditionalVisRight = "conditionalVis1",
+        string conditionalVis0Path = "../Periodic",
+        string conditionalVis0Op = "equalTo",
+        string conditionalVis0Value = "1",
+        string conditionalVis1Path = "../NoiseType",
+        string conditionalVis1Op = "notEqualTo",
+        string conditionalVis1Value = "usimplex",
+        int slider = 1, int slidermin = 1, int slidermax = 20,
+        string help =
+            "Sets the repetition interval for any <b>Variation.</b> "
     ]],
 
     output float  Float = 0.0,
@@ -101,24 +152,55 @@ shader pattern_Noise
 
     // Size scaling.
     float  size = max( 1.0e-6, Size );
-    Q /= size;
     OutSize = SpaceSize * size;
+    Q /= size;
 
-    // Compute the pattern.
-    if( 2 == NoiseDim )
+    // Compute this iteration's pattern.
+    if( 1 == Periodic && "usimplex" != NoiseType )
     {
-        Color = noise( NoiseType, Q.x + Variation, Q.y + Variation );
+        // Periodic space.
+        float  interval = round( SpacePeriod );
+        point  Q = Q*interval/SpacePeriod;
+
+        if( 1 == NoiseDim )
+        {
+            Color = pnoise( NoiseType, Q.x, Variation, SpacePeriod, VariationPeriod );
+        }
+        if( 2 == NoiseDim )
+        {
+            point  xyv = point( Q.x, Q.y, Variation );
+            Color = pnoise( NoiseType, xyv, SpacePeriod );
+        }
+        else if( 3 == NoiseDim )
+        {
+            Color = pnoise( NoiseType, Q + vector(Variation), SpacePeriod );
+        }
+        else // 4 == NoiseDim
+        {
+            Color = pnoise( NoiseType, Q, Variation, SpacePeriod, VariationPeriod );
+        }
     }
-    else if( 3 == NoiseDim )
+    else
     {
-        Color = noise( NoiseType, Q + point(Variation) );
-    }
-    else // 4 == NoiseDim
-    {
-        Color = noise( NoiseType, Q, Variation );
+        if( 1 == NoiseDim )
+        {
+            Color = noise( NoiseType, Q.x + Variation );
+        }
+        if( 2 == NoiseDim )
+        {
+            Color = noise( NoiseType, Q.x + Variation, Q.y + Variation );
+        }
+        else if( 3 == NoiseDim )
+        {
+            Color = noise( NoiseType, Q + vector(Variation) );
+        }
+        else // 4 == NoiseDim
+        {
+            Color = noise( NoiseType, Q, Variation );
+        }
     }
 
-    // Set the outputs.
+    // Set the other outputs.
     Float = Color.r;
     Gray = color( Float );
     Point = point( Color );

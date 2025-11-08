@@ -1,0 +1,33 @@
+/*
+ *  Copyright 2024 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader osl_div
+[[
+    int rfm_nodeid = 0000000,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "out = a / b"
+    ]],
+
+    float a = 0,
+    float b = 0,
+    color A = color(0),
+    color B = color(0),
+
+    output float out = 0,
+    output color Out = color(0)
+)
+{
+    out = a / b;
+    Out = A / B;
+}

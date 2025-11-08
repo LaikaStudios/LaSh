@@ -1,0 +1,74 @@
+/*
+ *  Copyright 2025 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#include "LaD.h"
+
+shader LaD_Add
+[[
+    int rfm_nodeid = 0000000,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Add the A and B LaSh Displacements (LaDs) "
+            "based on their desired Weights. "
+    ]],
+
+    float WeightA = 1.0
+    [[
+        string label = "Weight A",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Weight of the A LaSh Displacement (LaD). "
+    ]],
+
+    float WeightB = 1.0
+    [[
+        string label = "Weight B",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Weight of the B LaSh Displacement (LaD). "
+    ]],
+
+    LaD_struct A = LaD_INIT
+    [[
+        string readOnly = "True",
+        string help =
+            "The A LaSh Displacement (LaD). "
+    ]],
+
+    LaD_struct B = LaD_INIT
+    [[
+        string readOnly = "True",
+        string help =
+            "The B LaSh Displacement (LaD). "
+    ]],
+
+    output LaD_struct  Out = LaD_INIT
+)
+{
+    float weighted_add( float A, float WeightA, float B, float WeightB )
+    {
+        return clamp( A*WeightA + B*WeightB, 0.0, 1.0 );
+    }
+    vector weighted_add( vector A, float WeightA, vector B, float WeightB )
+    {
+        return A*WeightA + B*WeightB;
+    }
+
+    Out.Mask = weighted_add( A.Mask, WeightA, B.Mask, WeightB );
+    Out.Thickness = weighted_add( A.Thickness, WeightA, B.Thickness, WeightB );
+    Out.Accumulation = weighted_add( A.Accumulation, WeightA, B.Accumulation, WeightB );
+    Out.TauScale = weighted_add( A.TauScale, WeightA, B.TauScale, WeightB );
+    Out.Nd = normalize( weighted_add( A.Nd, WeightA, B.Nd, WeightB ));
+    Out.DeltaP = weighted_add( A.DeltaP, WeightA, B.DeltaP, WeightB );
+    Out.Bulk = weighted_add( A.Bulk, WeightA, B.Bulk, WeightB );
+}

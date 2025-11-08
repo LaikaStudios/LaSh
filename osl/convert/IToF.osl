@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2016 LAIKA. Authored by Mitch J Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -8,7 +8,7 @@
  */
 shader convert_IToF
 [[
-    int rfm_nodeid = 1234244,
+    int rfm_nodeid = 1234350,
     string rfm_classification = "rendernode/RenderMan/pattern/Laika"
 ]]
 (
@@ -16,17 +16,25 @@ shader convert_IToF
     [[
         int connectable = 0,
         string help =
-            "Convert an <b>Int</b> to a <b>Float</b> value. "
+            "Convert an integer to a float. "
     ]],
 
     int Int = 0
     [[
+        int slider = 1, int slidermin = -2, int slidermax = 2, int slidersensitivity = 1,
         string help =
-            "The Integer value to convert. "
+            "The integer value to convert. "
     ]],
 
-    output float  Float = 0.0
+    float Gain = 1.0
+    [[
+        int slider = 1, float slidermin = 0.1, float slidermax = 10.0, float slidercenter = 1.0,
+        string help =
+            "Scales the result. "
+    ]],
+
+    output float Float = 0.0
 )
 {
-    Float = Int;
+    Float = Gain * Int;
 }

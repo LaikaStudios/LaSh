@@ -1,0 +1,45 @@
+/*
+ *  Copyright 2025 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader LaB_Mask
+[[
+    int rfm_nodeid = 0000000,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Computes the Bxdf Mask for the Above over Below LaSh Material composite. "
+    ]],
+
+    float Above = 1.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "The overlying LaSh Material's Bxdf (LaB) Mask. "
+    ]],
+
+    float Below = 1.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "The underlying LaSh Material's Bxdf (LaB) Mask. "
+    ]],
+
+    output float  outAbove = 1.0,
+    output float  outBelow = 0.0,
+    output float  Mask = 1.0
+)
+{
+    outAbove = Above;
+    outBelow = Below;
+
+    Mask = Below*(1-Above) + Above;
+}

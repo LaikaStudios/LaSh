@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch J Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -18,36 +18,39 @@ shader convert_SFEToNK
         string helpAlert = "warning",
         string help =
             "Converts the <i>Artistic</i> specular reflection colors "
-            "<b>Specular Face</b> (F0 color) and <b>Specular Edge</b> (F90 color) "
+            "<b>Specular Face</b> (R0 color) and <b>Specular Edge</b> (R90 color) "
             "to an equivalent <i>Refraction Index</i> (<b>n</b>) "
-            "and <i>Extinction Coefficient</i> (<b>k</b>) used by <i>Physcial</i> "
-            "specular reflection models. "
-            "The combination of (<b>n</b> + <i>i</i><b>k</b>) "
+            "and <i>Extinction Coefficient</i> (<b>k</b>) used by "
+            "<i>Physical</i> specular reflection models for conductors. "
+            "The combination of (<b>n</b> + <i>i</i> <b>k</b>) "
             "is called the complex refractive index. "
-            "<br/><br/>"
+            "<p>"
             "<font color='orange'>Note</font>: when using this with "
             "PxrSurface's <i>Physical</i> <b>Specular Fresnel Mode</b>, "
             "set the Specular <b>Edge Color</b> to (1,1,1) to match "
             "the results produced by LamaConductor. "
+            "</p>"
     ]],
 
     color SpecularFace = color(0.0)
     [[
-        string label = "Specular Face (F0)",
+        string label = "Specular Face (R0)",
         string help =
             "The reflected specular color when looking perpendicular to the surface "
             "(down the surface normal). "
-            "<br/><br/>"
-            "This is also known as the F0 color. "
+            "<p>"
+            "This is also known as the R0 (or F0) color. "
+            "</p>"
     ]],
 
     color SpecularEdge = color(1.0)
     [[
-        string label = "Specular Edge (F90)",
+        string label = "Specular Edge (R90)",
         string help =
             "The reflected specular color at the silhouette edge (tangent to the surface). "
-            "<br/><br/>"
-            "This is also known as the F90 color. "
+            "<p>"
+            "This is also known as the R90 (or F90) color. "
+            "</p>"
     ]],
 
     output color n = color(0.0),
@@ -61,24 +64,24 @@ shader convert_SFEToNK
     // Journal of Computer Graphics Techniques, Vol. 3, No. 4
     // http://jcgt.org/published/0003/04/03/
 
-    float f0f90_to_eta( float f0, float f90 )
+    float r0r90_to_eta( float r0, float r90 )
     {
-        float  eta = ( 1.0-f0 )/( 1.0+f0 );
+        float  eta = ( 1.0-r0 )/( 1.0+r0 );
 
-        float  sqrt_f0 = sqrt( f0 );
-        float  eta_max = ( 1.0+sqrt_f0 )/( 1.0-sqrt_f0 );
+        float  sqrt_r0 = sqrt( r0 );
+        float  eta_max = ( 1.0+sqrt_r0 )/( 1.0-sqrt_r0 );
 
         eta_max = select( 1.0e6, eta_max, isfinite(eta_max) );
 
-        eta = mix( eta_max, eta, f90 );
+        eta = mix( eta_max, eta, r90 );
 
         return eta;
     }
 
-    float f0eta_to_k( float f0, float eta )
+    float r0eta_to_k( float r0, float eta )
     {
-        float  nr = f0*square( eta+1.0 ) - square( eta-1.0 );
-        float  k = sqrt( nr/( 1.0-f0 ));
+        float  nr = r0*square( eta+1.0 ) - square( eta-1.0 );
+        float  k = sqrt( nr/( 1.0-r0 ));
 
         return select( 1.0, k, isfinite(k) );
     }
@@ -86,28 +89,29 @@ shader convert_SFEToNK
     // This is the pseudo-spectral portion, so it's fairly bogus.
     // In particular, the hue caused by simply using the rgb values
     // results in the hue being inverted in the edge response for
-    // extreme (i.e. non-physical) color differences in f0 and f90.
-    // At any rate, it does work quite well in practice.
-    color f0f90_to_eta( color f0, color f90 )
+    // extreme (i.e. non-physical) color differences in r0 and r90.
+    // However, it does work quite well in practice for reasonable
+    // r0,r90 values.
+    color r0r90_to_eta( color r0, color r90 )
     {
         return color(
-                f0f90_to_eta( f0[0], f90[0] ),
-                f0f90_to_eta( f0[1], f90[1] ),
-                f0f90_to_eta( f0[2], f90[2] )
+                r0r90_to_eta( r0[0], r90[0] ),
+                r0r90_to_eta( r0[1], r90[1] ),
+                r0r90_to_eta( r0[2], r90[2] )
                 );
     }
 
-    color f0eta_to_k( color f0, color eta )
+    color r0eta_to_k( color r0, color eta )
     {
         return color(
-                f0eta_to_k( f0[0], eta[0] ),
-                f0eta_to_k( f0[1], eta[1] ),
-                f0eta_to_k( f0[2], eta[2] )
+                r0eta_to_k( r0[0], eta[0] ),
+                r0eta_to_k( r0[1], eta[1] ),
+                r0eta_to_k( r0[2], eta[2] )
                 );
     }
 
-    color  eta = f0f90_to_eta( SpecularFace, SpecularEdge );
-    k = f0eta_to_k( SpecularFace, eta );
+    color  eta = r0r90_to_eta( SpecularFace, SpecularEdge );
+    k = r0eta_to_k( SpecularFace, eta );
 
     n = color(1)/eta;
     n = select( color(1.0e6), n, color( isfinite(n[0]), isfinite(n[1]), isfinite(n[2]) ));

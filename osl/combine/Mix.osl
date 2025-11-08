@@ -1,0 +1,47 @@
+/*
+ *  Copyright 2024 Mitch J Prater. Modified for use at LAIKA.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#include "combine/Input.h"
+
+shader combine_Mix
+[[
+    int rfm_nodeid = 1234358,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Mix the A and B inputs: output = A*(1-Mix) + B*Mix. "
+            "<p>"
+            "OutSize is the mix of the two input Sizes. "
+            "</p>"
+    ]],
+
+    float Mix = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Controls the linear blend between the "
+            "A ( <b>Mix</b> = <i>0</i> ) "
+            "and B ( <b>Mix</b> = <i>1</i> ) inputs. "
+    ]],
+
+    INPUT_PARAMS(A),
+    INPUT_PARAMS(B),
+
+    output float out = 0.0,
+    output color Out = color(0.0),
+    output float OutSize = 1.0
+)
+{
+    out = mix( A_in, B_in, Mix );
+    Out = mix( A_In, B_In, Mix );
+    OutSize = mix( A_Size, B_Size, Mix );
+}

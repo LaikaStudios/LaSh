@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch J Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -18,7 +18,7 @@ shader LaD_Layer
     [[
         int connectable = 0,
         string help =
-            "<b>Layer</b> the <b>Above</b> LaSh Displacement (LaD) "
+            "Vertically layer the <b>Above</b> LaSh Displacement (LaD) "
             "over the <b>Below</b> LaSh Displacement (LaD). "
     ]],
 
@@ -26,7 +26,7 @@ shader LaD_Layer
     [[
         string readOnly = "True",
         string help =
-            "The <b>Above</b> LaSh Displacement (LaD). "
+            "The overlying LaSh Material's Displacement (LaD). "
 
     ]],
 
@@ -34,7 +34,7 @@ shader LaD_Layer
     [[
         string readOnly = "True",
         string help =
-            "The <b>Below</b> LaSh Displacement (LaD). "
+            "The underlying LaSh Material's Displacement (LaD). "
     ]],
 
     output float Tau = 0.0,

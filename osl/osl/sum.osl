@@ -1,0 +1,58 @@
+/*
+ *  Copyright 2024 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#define INPUT_FLOAT(L) \
+    float in##L = 0.0 \
+    [[ \
+        string label = "in " #L \
+    ]]
+
+#define INPUT_COLOR(L) \
+    color In##L = color(0.0) \
+    [[ \
+        string label = "In " #L \
+    ]]
+
+shader osl_sum
+[[
+    int rfm_nodeid = 0000000,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "out = in 0 + in 1 + in 2 + ..."
+    ]],
+
+    INPUT_FLOAT(0),
+    INPUT_FLOAT(1),
+    INPUT_FLOAT(2),
+    INPUT_FLOAT(3),
+    INPUT_FLOAT(4),
+    INPUT_FLOAT(5),
+    INPUT_FLOAT(6),
+    INPUT_FLOAT(7),
+
+    INPUT_COLOR(0),
+    INPUT_COLOR(1),
+    INPUT_COLOR(2),
+    INPUT_COLOR(3),
+    INPUT_COLOR(4),
+    INPUT_COLOR(5),
+    INPUT_COLOR(6),
+    INPUT_COLOR(7),
+
+    output float out = 0,
+    output color Out = color(0)
+)
+{
+    out = in0 + in1 + in2 + in3 + in4 + in5 + in6 + in7;
+    Out = In0 + In1 + In2 + In3 + In4 + In5 + In6 + In7;
+}

@@ -1,0 +1,77 @@
+/*
+ *  Copyright 2024 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader modify_Step
+[[
+    int rfm_nodeid = 1234334,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Step the input at the desired value: create "
+            "a 0-1 transition with the desired width. "
+    ]],
+
+    float in = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "The input pattern. "
+    ]],
+
+    color In = color(0.5)
+    [[
+        string help =
+            "The input pattern. "
+    ]],
+
+    float Step = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help = 
+            "The input value where the transtion will occur. "
+            "Values lower than this will produce 0 "
+            "and values higher than this will produce 1. "
+    ]],
+
+    float Width = 0.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help = 
+            "The width of the transtion: "
+            "blurs the step's transition. "
+    ]],
+
+    int Type = 0
+    [[
+        string widget = "mapper",
+        string options = "Smooth:0|Linear:1",
+        string help = 
+            "Selects the <b>Type</b> of <b>Width</b> transition curve. "
+    ]],
+
+    output float out = 0.0,
+    output color Out = color(0.0)
+)
+{
+    float  width = 0.5*Width;
+
+    if( 0 == Type )
+    {
+        out = smoothstep( Step-width, Step+width, in );
+        Out = smoothstep( color(Step-width), color(Step+width), In );
+    }
+    else
+    {
+        out = linearstep( Step-width, Step+width, in );
+        Out = linearstep( color(Step-width), color(Step+width), In );
+    }
+}

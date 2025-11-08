@@ -1,0 +1,59 @@
+/*
+ *  Copyright 2021 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#include "bumpdisp.h"
+
+shader displace_BumpDispRatio
+[[
+    int rfm_nodeid = 0000000,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "This node produces the correct ratio of displacement to "
+            "bumped shading based on the geometric tessellation and "
+            "pattern sizes. "
+            "This maximizes the use of displacement up to the point where "
+            "it must be superseded by bumped shading in order to avoid "
+            "displacement aliasing caused by too few micropolygons to "
+            "accurately represent the displacement variations. "
+    ]],
+
+    float Ratio = 1.0
+    [[
+        int slider = 1, float slidermin = 0.5, float slidercenter = 1.0, float slidermax = 2.0,
+        string help =
+            "Scales the ratio of displacement to bumping: "
+            "<p>"
+            "Ratio < 1 shifts the result toward <i>bumping</i>. "
+            "<br>1 < Ratio shifts the result toward <i>displacement</i>. "
+            "</p>"
+            "Note: changing the Ratio control will only have a visible effect when "
+            "the rendered results are in the bump-to-displacement transition phase. "
+    ]],
+
+    float Size = 1.0
+    [[
+        string help =
+            "The Size of the displacement pattern: the pattern "
+            "variation's characteristic wavelength. "
+    ]],
+
+    output float BumpDispMix = 0.5
+)
+{
+    // Determine the bump/disp ratio.
+    float  mpSize = ikaMpSize();
+    float  disp_amount = ikaBumpDispMix( Size, mpSize, Ratio );
+
+    // bump_amount = 1 - disp_amount;
+    BumpDispMix = disp_amount;
+}

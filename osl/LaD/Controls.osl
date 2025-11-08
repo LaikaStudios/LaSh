@@ -1,0 +1,101 @@
+/*
+ *  Copyright 2025 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#include "LaD.h"
+
+shader LaD_Controls
+[[
+    int rfm_nodeid = 0000000,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Produces the cascading surface normal, <b>Nd</b>, "
+            "from an input LaD's Nd value as controlled by the "
+            "overlying material's Mask, Thickness, and Cascade Normal parameters. " 
+    ]],
+
+    float Mask = 1.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "This Material's Mask. "
+            "This is directly passed-through to <b>outMask</b> "
+            "and so can also be used to control the Bxdf Mask. "
+    ]],
+
+    float Thickness = 0.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Controls the Thickness of this Material's application. "
+            "A \"thicker\" application results in any underlying displacement "
+            "being more covered over: "
+            "<p>"
+            "<i>0</i> - the Below LaD's displacement is fully present. "
+            "<br/><i>1</i> - the Below LaD's displacement is completely absent. "
+            "</p>"
+            "This is directly passed-through to <b>outThickness</b>. "
+    ]],
+
+    float Accumulation = 0.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Accumulation determines whether this Material's displacement "
+            "is applied over the peaks of the Below LaD's displacement (1) "
+            "or not (0). "
+            "Greater Accumulation results in more material Bulk due to "
+            "the buildup of displacements. "
+    ]],
+
+    float TauScale = 1.0
+    [[
+        string label = "Tau Scale",
+        int slider = 1, float slidermin = 0.2, float slidermax = 5.0, float slidercenter = 1.0,
+        string help =
+            "Tau Scale provides a means to adjust this Material's "
+            "optical density, <i>Tau</i>, as computed by "
+            "the <b>LaD_Layer</b> node. "
+    ]],
+
+    float CascadeNormal = 1.0
+    [[
+        string label = "Cascade Normal",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Controls the computation of <b>outNd</b>, which can be used by "
+            "this Material to influence its height-based displacement direction. "
+    ]],
+
+    LaD_struct Below_LaD = LaD_INIT
+    [[
+        string readOnly = "True",
+        string label = "Below LaD",
+        string help =
+            "The underlying Material's LaSh Displacement (LaD). "
+    ]],
+
+    output float  outMask = 1.0,
+    output float  outThickness = 0.0,
+    output float  outAccumulation = 0.0,
+    output float  outTauScale = 1.0,
+    output normal outNd = N,
+    output LaD_struct outBelowLaD = LaD_INIT
+)
+{
+    outMask = Mask;
+    outThickness = Thickness;
+    outAccumulation = Accumulation;
+    outTauScale = TauScale;
+    outNd = normalize( mix( N, Below_LaD.Nd, (1-Thickness) * CascadeNormal ));
+    outBelowLaD = Below_LaD;
+}

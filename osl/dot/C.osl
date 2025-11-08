@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch J Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
@@ -7,6 +7,10 @@
  *  This program may not be copied, modified, or distributed except according to those terms.
  */
 shader dot_C
+[[
+    int rfm_nodeid = 1234302,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
 (
     string Notes = ""
     [[

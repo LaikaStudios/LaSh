@@ -1,0 +1,48 @@
+/*
+ *  Copyright 2024 Mitch J Prater. Modified for use at LAIKA.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader modify_Invert
+[[
+    int rfm_nodeid = 1234332,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Invert the input pattern: output = 1-input. "
+    ]],
+
+    float in = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "The input pattern. "
+    ]],
+
+    color In = color(0.5)
+    [[
+        string help =
+            "The input pattern. "
+    ]],
+
+    int Invert = 1
+    [[
+        string widget = "checkBox",
+        string help = 
+            "Invert the input: output = 1-input "
+    ]],
+
+    output float out = 0.0,
+    output color Out = color(0.0)
+)
+{
+    out = select( in, 1.0-in, Invert );
+    Out = select( In, color(1.0)-In, Invert );
+}

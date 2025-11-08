@@ -1,0 +1,69 @@
+/*
+ *  Copyright 2024 LAIKA. Authored by Mitch J Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader modify_Clamp
+[[
+    int rfm_nodeid = 1234328,
+    string rfm_classification = "rendernode/RenderMan/pattern/Laika"
+]]
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Clamps (clips) the input pattern to range between 0 and 1. "
+    ]],
+
+    float in = 0.5
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "The input pattern. "
+    ]],
+
+    color In = color(0.5)
+    [[
+        string help =
+            "The input pattern. "
+    ]],
+
+    float TransitionWidth = 0.0
+    [[
+        string label = "Transition Width",
+        int slider = 1, float slidermin = 0.0, float slidermax = 0.5,
+        string help =
+            "Controls the width of the transition used to clamp the input pattern. "
+            "0.0 produces hard clipping while 0.5 produces a very smooth transition. "
+    ]],
+
+    float Clamp = 1.0
+    [[
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Controls the amount of clamping applied to the input pattern. "
+            "A value of 0 leaves the input pattern unchanged. "
+    ]],
+
+    output float out = 0.0,
+    output color Out = color(0.0)
+)
+{
+    // Clamp the patterns.
+    float width = 0.5 * TransitionWidth;
+
+    float inClamp = smooth_linearstep( 0.0, 1.0, in, width );
+
+    color InClamp = color(
+                    smooth_linearstep( 0.0, 1.0, In.r, width ),
+                    smooth_linearstep( 0.0, 1.0, In.g, width ),
+                    smooth_linearstep( 0.0, 1.0, In.b, width )
+                    );
+
+    out = mix( in, inClamp, Clamp );
+    Out = mix( In, InClamp, Clamp );
+}

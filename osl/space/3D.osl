@@ -1,11 +1,19 @@
 /*
- *  Copyright 2023 Laika, LLC. Authored by Mitch Prater.
+ *  Copyright 2023 LAIKA. Authored by Mitch J Prater.
  *
  *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
  *  or the MIT license http://opensource.org/licenses/MIT, at your option.
  *
  *  This program may not be copied, modified, or distributed except according to those terms.
  */
+
+// Define the cube-root function for OSL versions that don't have it.
+#if OSL_VERSION_MINOR >= 13
+    float cube_root( float x ) { return cbrt(x); }
+#else
+    float cube_root( float x ) { return pow( x, (1./3.) ); }
+#endif
+
 shader space_3D
 [[
     int rfm_nodeid = 1234272,
@@ -29,8 +37,8 @@ shader space_3D
             "<b>Displaced P</b> determines whether to use the displaced "
             "surface, or the original un-displaced surface. "
             "<p>"
-            "When <i>On</i>, use the displaced surface point <b>P</b>."
-            "<br/>When <i>Off</i>, use the un-displaced surface point <b>Po</b>."
+            "When <i>On</i>, use the displaced surface point <tt>P</tt>."
+            "<br>When <i>Off</i>, use the un-displaced surface point <tt>Po</tt>."
             "</p>"
     ]],
 
@@ -69,7 +77,7 @@ shader space_3D
             "</p>"
     ]],
 
-    string SizeSpace = "world"
+    string SizeSpace = "object"
     [[
         int connectable = 0,
         string label = "Size Space",
@@ -134,7 +142,7 @@ shader space_3D
             matrix  coord_to_size;
             if( getmatrix( Coordinates, SizeSpace, coord_to_size ))
             {
-                Out *= pow( abs( determinant( coord_to_size )), 0.33333333 );
+                Out *= cube_root( abs( determinant( coord_to_size )));
             }
             else
             {
