@@ -102,7 +102,7 @@ This should only be necessary in special circumstances however as the LaSh syste
 
 <a name="LamaLayerNote"></a>
 **Note**: due to a [bug](https://renderman.pixar.com/forum/forum/support/renderman-pro-server/26788-lamalayer-bug) in the [LamaLayer](https://rmanwiki.pixar.com/space/REN/19661467/) node, you must choose between using [LaSh_Material](#lash_material) nodes plus [LaSh_Layer](#lash_layer) to do Material layering,
-or using [LaSh_MaterialLink](#lash-materiallink) nodes and daisy-chaining them to define a layered Material.
+or using [LaSh_MaterialLink](#lash_materiallink) nodes and daisy-chaining them to define a layered Material.
 Combining these two approaches creates a connection topology that the LamaLayer node is currently unable to process correctly.
 
 #### LaSh_MaterialLink
@@ -110,7 +110,7 @@ Combining these two approaches creates a connection topology that the LamaLayer 
 This node is used to define a LaSh Material by editing its internal shading network.
 It combines the functionality of a [LaSh_Material](#lash_material) node with a [LaSh_Layer](#lash_layer) node into one.
 This allows Materials to be layered vertically by their daisy-chained connection order as shown in the [Layering](#layering) example.
-LaSh_MaterialLink nodes also allow any height-based displacements to "cascade" as shown in the [Cascading Displacement](#casdading-displacement) example.
+LaSh_MaterialLink nodes also allow any height-based displacements to "cascade" as shown in the [Cascade Normal](#cascade-normal) example.
 The **Enable** parameter allows this node and all its shading to be completely bypassed when disabled.
 
 **Note**: LaSh_MaterialLink nodes *cannot* use the [LaSh_Layer](#lash_layer) node to vertically layer them.
@@ -130,7 +130,7 @@ When creating a new LaSh Material, the simple Material shading network is replac
 #### LaSh_Material
 
 This node is used to define a LaSh Material by editing its internal shading network.
-LaSh_Material nodes are layered vertically with a separate [LaSh_Layer](#lash_layer) node and cannot be used to [Cascade](#cascading-displacement) displacements.
+LaSh_Material nodes are layered vertically with a separate [LaSh_Layer](#lash_layer) node and cannot be used to [Cascade](#cascade-normal) displacements.
 
 **Note**: you *must* use this node if you want to use the [LaSh_Layer](#lash_layer) node to vertically layer Materials.
 
