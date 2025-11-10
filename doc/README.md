@@ -56,7 +56,7 @@ If you're implementing this in another rendering system, you'll need to replace 
 A **LaD** is composed of several parts.
 The first is the displacement itself, which is represented as the change in the surface point: *DeltaP*.
 As explained in the
-[Shader Writing in Open Shading Language](https://www.routledge.com/Shader-Writing-in-Open-Shading-Language-with-RenderManr-Examples/Prater/p/book/9781032421100) book,
+[*Shader Writing in Open Shading Language*](https://www.routledge.com/Shader-Writing-in-Open-Shading-Language-with-RenderManr-Examples/Prater/p/book/9781032421100) book,
 this is a much more efficient and useful displacement representation than the displaced surface point itself.
 The LaD *Bulk* is another critical displacement-related value.
 It allows LaDs to accumulate mass as they're layered over each other.
@@ -68,15 +68,17 @@ However, due to the closed-source status of the [ILM](https://www.ilm.com/) [Mat
 
 ### Displacement Layering
 
-**Thickness** and **Accumulation** provide the user with the ability to adjust the physical characteristics of the layered displacement composition.
+[**Thickness**](#thickness-accumulation-and-bulk) and [**Accumulation**](#thickness-accumulation-and-bulk)
+provide the user with the ability to adjust the physical characteristics of the layered displacement composition.
 Thickness determines what percentage of the underlying displacement
 remains or is obliterated by the overlying Material's displacement.
 Accumulation determines whether the applied LaD’s displacement will result in the build-up of material in the resulting surface:
-when displacements accumulate, they increase the resulting layered Material's *Bulk*.
+when displacements accumulate, they increase the resulting layered Material's [*Bulk*](#thickness-accumulation-and-bulk).
 
-Two additional values are contained in the [LaD struct](../osl/include/LaD.h): **Tau Scale** and *Nd*.
+Two additional values are contained in the [LaD struct](../osl/include/LaD.h):
+[**Tau Scale**](#thickness-accumulation-tau-scale-and-tau) and [*Nd*](#cascade-normal).
 Tau Scale is used to make any necessary or desired correction to the *Bulk*'s effect on the optical thickness of the layered BxDFs, and *Nd* contains the underlying LaD's displaced surface normal in order to allow the possibility of cascading height-based displacements.
-The degree to which this is done is adjusted by the **Cascade Normal** control.
+The degree to which this is done is adjusted by the [**Cascade Normal**](#cascade-normal) control.
 
 **Note:** the displacement *Size* attribute described in the paper has been renamed *Bulk* in this implemenation to disambiguate it from the **Size** pattern generation control parameter and
 the pattern variation (signal wavelength) *Size* attribute.
