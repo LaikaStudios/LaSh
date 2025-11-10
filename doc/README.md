@@ -101,7 +101,7 @@ Since these are ShadingGroup nodes, if necessary, you can add your own input/out
 This should only be necessary in special circumstances however as the LaSh system provides all the Material interfacing necessary for the majority of use cases.
 
 <a name="LamaLayerNote"></a>
-**Note**: due to a [bug](https://renderman.pixar.com/forum/forum/support/renderman-pro-server/26788-lamalayer-bug) in the [LamaLayer](https://rmanwiki.pixar.com/space/REN/19661467/) node, you must choose between using [LaSh_Material](#lash-material) nodes plus [LaSh_Layer](#lash-layer) to do Material layering,
+**Note**: due to a [bug](https://renderman.pixar.com/forum/forum/support/renderman-pro-server/26788-lamalayer-bug) in the [LamaLayer](https://rmanwiki.pixar.com/space/REN/19661467/) node, you must choose between using [LaSh_Material](#lash_material) nodes plus [LaSh_Layer](#lash_layer) to do Material layering,
 or using [LaSh_MaterialLink](#lash-materiallink) nodes and daisy-chaining them to define a layered Material.
 Combining these two approaches creates a connection topology that the LamaLayer node is currently unable to process correctly.
 
