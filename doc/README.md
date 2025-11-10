@@ -3,7 +3,7 @@
 
 ![Production Layered Material Shading Graph](media/LayeringGraph.png)
 
-LaSh (Layered Shading) is a displacement aware Material shader layering system based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dl.acm.org/doi/10.1145/3603521.3604289).
+LaSh (Layered Shading) is a displacement-aware Material shader layering system based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dl.acm.org/doi/10.1145/3603521.3604289).
 Derived from the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home), it has been expanded upon and reimplemented using the latest shading and rendering technology.
 
 LaSh implements these key features:

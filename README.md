@@ -1,14 +1,14 @@
-# Layered Shading (LaSh)
+# LaSh (Layered Shading)
 
 ![Layered Materials](media/Layers1280x640.jpg)
 
-This repository and its associated documentation contain the latest public reference implementation of the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dl.acm.org/doi/10.1145/3603521.3604289).
+LaSh is a displacement-aware Material shader layering system that contains the latest reference implementation of the [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dl.acm.org/doi/10.1145/3603521.3604289) paper.
 
-Similar to the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home) from which it is derived,
+Derived from the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home),
 LaSh incorporates bxdfs and displacements into its definition of a LaSh Material shader so that it can represent a true physical substance,
-and implements a bxdf and displacement layering capability so LaSh Material shaders can be easily and intuitively layered over one another in a physically plausible way.
+and implements a bxdf and displacement-aware layering capability so LaSh Material shaders can be easily and intuitively layered over one another in a physically plausible way.
 
-Documentation is in the [`doc`](doc) directory.
+All documentation is in the [`doc`](doc) directory.
 
 As a bonus, this repository also contains the [Siggraph 2024 Shader Writing in Open Shading Language](https://dl.acm.org/doi/10.1145/3664475.3664534) course [Supplementary Material](https://github.com/LaikaStudios/OSLShaderWriting) shading nodes.
 
