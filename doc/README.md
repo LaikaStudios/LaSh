@@ -64,7 +64,7 @@ The LaD **Mask** defines the displacement transition at the edge of the Material
 A LaD Mask may need a slightly "softer" transition than the LaB Mask, since rendered displacement does not respond well to severe discontinuities, and abrupt displacement transitions also aren't very realistic looking.
 
 **Note**: ideally a LaSh Material (LaM) would be expressed as a single connection between [LaSh Nodes](#lash-nodes).
-However, due to the closed-source status of the [ILM](ahttps://www.ilm.com/) [MaterialX Lama](https://rmanwiki.pixar.com/display/REN/MaterialX+Lama) system in RenderMan, the BxDF portion of a LaSh Material must be separate from its own Mask and the LaD struct.
+However, due to the closed-source status of the [ILM](https://www.ilm.com/) [MaterialX Lama](https://rmanwiki.pixar.com/display/REN/MaterialX+Lama) system in RenderMan, the BxDF portion of a LaSh Material must be separate from its own Mask and the LaD struct.
 
 ### Displacement Layering
 
