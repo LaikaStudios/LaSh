@@ -10,7 +10,7 @@ and implements a bxdf and displacement layering capability so LaSh Material shad
 
 Documentation is in the [`doc`](doc) directory.
 
-As a bonus, this repository also contains the [Siggraph 2023 Shader Writing in Open Shading Language](https://dl.acm.org/doi/10.1145/3587423.3597945) course [Supplementary Material](https://github.com/LaikaStudios/OSLShaderWriting) shading nodes.
+As a bonus, this repository also contains the [Siggraph 2024 Shader Writing in Open Shading Language](https://dl.acm.org/doi/10.1145/3664475.3664534) course [Supplementary Material](https://github.com/LaikaStudios/OSLShaderWriting) shading nodes.
 
 Please feel free to use the [Discussions Tab](https://github.com/LaikaStudios/LaSh/discussions).
 I'd love you hear what you think, or to discuss any issues or thoughts you may have about this repository and its Layered Shading implementation.
