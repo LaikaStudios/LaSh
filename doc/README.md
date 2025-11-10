@@ -1,7 +1,7 @@
 <a name="Top"></a>
 # LaSh
 
-![Layering](media/Layering.jpg)
+![Production Layered Material Shading Graph](media/LayeringGraph.png)
 
 LaSh (Layered Shading) is a displacement aware Material shader layering system based on the paper [*Layering Displaced Materials with Thickness, Accumulation, and Size*](https://dl.acm.org/doi/10.1145/3603521.3604289).
 Derived from the [Laika Production Shading Library for RenderMan 20](https://github.com/LaikaStudios/shading-library/wiki/prman_20.Home), it has been expanded upon and reimplemented using the latest shading and rendering technology.
@@ -164,8 +164,6 @@ The LaSh_Add internal shading network is shown here for reference. It should not
 ![LaSh_Add Internal Network](media/LaSh_Add.Graph.png) 
 </details>
 
-<br>
-
 [Top](#Top)
 [TOC](#table-of-contents)
 
@@ -183,8 +181,6 @@ The LaSh_Mix internal shading network is shown here for reference. It should not
 
 ![LaSh_Mix Internal Network](media/LaSh_Mix.Graph.png) 
 </details>
-
-<br>
 
 [Top](#Top)
 [TOC](#table-of-contents)
@@ -206,8 +202,6 @@ The LaSh_Layer internal shading network is shown here for reference. It should n
 ![LaSh_Layer Internal Network](media/LaSh_Layer.Graph.png) 
 </details>
 
-<br>
-
 [Top](#Top)
 [TOC](#table-of-contents)
 
@@ -226,8 +220,6 @@ The LaSh_Surface internal shading network is shown here for reference. It should
 
 ![LaSh_Surface Internal Network](media/LaSh_Surface.Graph.png) 
 </details>
-
-<br>
 
 [Top](#Top)
 [TOC](#table-of-contents)
@@ -269,8 +261,6 @@ Yellow Bumpy Material.
 ![Yellow Bumpy Material network.](media/YellowBumpy.Graph.png) 
 </details>
 
-<br>
-
 [Top](#Top)
 [TOC](#table-of-contents)
 
@@ -306,8 +296,6 @@ Yellow Bumpy Material.
 
 ![Yellow Bumpy Material network.](media/YellowBumpy.Graph.png) 
 </details>
-
-<br>
 
 [Top](#Top)
 [TOC](#table-of-contents)
@@ -351,8 +339,6 @@ Cyan Waffle Material.
 
 ![Cyan Waffle Material network](media/Cyan_Waffle.Graph.png) 
 </details>
-
-<br>
 
 [Top](#Top)
 [TOC](#table-of-contents)
@@ -399,8 +385,6 @@ WavyBlue Material.
 ![Wavy Blue Material network.](media/WavyBlue.Graph.png) 
 </details>
 
-<br> 
-
 [Top](#Top)
 [TOC](#table-of-contents)
 
@@ -436,8 +420,6 @@ LaSh_Solid Material.
 
 ![LaSh_Solid Material network.](media/LaSh_Solid.Graph.png) 
 </details>
-
-<br>
 
 [Top](#Top)
 [TOC](#table-of-contents)
@@ -477,8 +459,6 @@ Bumps Material.
 
 ![Bumps Material network.](media/Bumps.Graph.png) 
 </details>
-
-<br>
 
 [Top](#Top)
 [TOC](#table-of-contents)
