@@ -41,6 +41,9 @@ While the system contained herein is implemented using [RenderMan](https://rmanw
         1. [Thickness, Accumulation, and *Bulk*](#thickness-accumulation-and-bulk)
         1. [Thickness, Accumulation, Tau Scale, and *Tau*](#thickness-accumulation-tau-scale-and-tau)
         1. [Cascade Normal and *Nd*](#cascade-normal)
+1. [Installation](INSTALL.md#installation)
+    1. [Requirements](INSTALL.md#requirements)
+    1. [Quick Start](INSTALL.md#quick-start)
 
 ## The LaSh Material
 
@@ -464,5 +467,4 @@ Bumps Material.
 
 [Top](#Top)
 [TOC](#table-of-contents)
-
 
