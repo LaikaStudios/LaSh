@@ -386,10 +386,10 @@ shader texture_2D
         }
         else if( 2 == channels )
         {
-            RGB = RGB[0];
             A = RGB[1];
-            RGBAvg = RGBAvg[0];
+            RGB = RGB[0];
             AAvg = RGBAvg[1];
+            RGBAvg = RGBAvg[0];
         }
         else if( 3 == channels )
         {
